@@ -37,7 +37,5 @@ namespace PRG2_Assignment_Team5
         {
             return "Check In: " + CheckIn + "\tCheck Out:" + CheckOut + "\tLocation: " + Location;
         }
-
-
     }
 }
