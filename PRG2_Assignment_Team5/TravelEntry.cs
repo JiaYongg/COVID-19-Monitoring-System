@@ -29,10 +29,29 @@ namespace PRG2_Assignment_Team5
         public void AssignSHNFacility(SHNFacility ShnFac)
         {
             ShnStay = ShnFac;
+            ShnFac.FacilityVacancy -= 1;
         }
-        // to add
-        // 1) AssignSHNFacility(SHNFacility)
-        // 2) CalculateSHNDuration()
-        // 3) ToString():string
+
+        public void CalculateSHNDuration()
+        {
+            if (LastCountryOfEmbarkation == "New Zealand" || LastCountryOfEmbarkation == "Vietnam")
+            {
+                ShnEndDate = EntryDate.AddDays(0);
+            }
+            else if (LastCountryOfEmbarkation == "Macao SAR")
+            {
+                ShnEndDate = EntryDate.AddDays(7);
+            }
+            else
+            {
+                ShnEndDate = EntryDate.AddDays(14);
+            }
+        }
+
+        public override string ToString()
+        {
+            return "Last Country of Embarkation: " + LastCountryOfEmbarkation + "\tEntry Mode: " + EntryMode + "\tEntry Date" + EntryDate;
+            // may need to add ShnEndDate, ShnStay, IsPaid
+        }
     }
 }
