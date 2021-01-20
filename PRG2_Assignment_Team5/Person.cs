@@ -13,9 +13,9 @@ namespace PRG2_Assignment_Team5
     {
         public string Name { get; set; }
 
-        public List<Person> SafeEntryList = new List<Person>(); //change list type to travelentry and safeentry respectively
+        public List<SafeEntry> SafeEntryList { get; set; } 
 
-        public List<Person> TravelEntryList = new List<Person>(); //change list type to travelentry and safeentry respectively
+        public List<TravelEntry> TravelEntryList { get; set; } 
 
         public Person() { }
 
@@ -24,14 +24,14 @@ namespace PRG2_Assignment_Team5
             Name = name;
         }
 
-        public void AddTravelEntry(TravelEntry)
+        public void AddTravelEntry(TravelEntry travelEntry)
         {
-
+            TravelEntryList.Add(travelEntry);
         }
 
-        public void AddSafeEntry(SafeEntry)
+        public void AddSafeEntry(SafeEntry safeEntry)
         {
-
+            SafeEntryList.Add(safeEntry);
         }
 
         public abstract double CalculateSHNCharges();
