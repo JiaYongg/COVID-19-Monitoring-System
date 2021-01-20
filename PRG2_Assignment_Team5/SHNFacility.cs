@@ -34,7 +34,7 @@ namespace PRG2_Assignment_Team5
             DistFromLandCheckpoint = landcp;
         }
 
-        public double CalculateTravelCost(string name, DateTime date)
+        public double CalculateTravelCost(string em, DateTime date)
         {
             
         }
