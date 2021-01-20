@@ -42,7 +42,12 @@ namespace PRG2_Assignment_Team5
 
         public void ReplaceToken(string sn, string collocation)
         {
+            Console.Write("Enter Serial Number: ");
+            sn = Console.ReadLine();
             SerialNo = sn;
+
+            Console.Write("Enter Collection Location: ");
+            collocation = Console.ReadLine();
             CollectionLocation = collocation;
         }
     }
