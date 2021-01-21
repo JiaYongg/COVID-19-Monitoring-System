@@ -34,9 +34,84 @@ namespace PRG2_Assignment_Team5
             DistFromLandCheckpoint = landcp;
         }
 
-        public double CalculateTravelCost(string name, DateTime date)
+        public double CalculateTravelCost(string entrymode, DateTime entrydate)
         {
-            
+            if ((entrydate.Hour >= 6 && entrydate.Hour < 9) || (entrydate.Hour >= 18 && entrydate.Hour < 24))
+            {
+                double extracharge = 0.25;
+
+                if (entrymode == "Air")
+                {
+                    double baseFare = 50 + DistFromAirCheckpoint * 0.22; //subjected to change  
+                    double totalFare = baseFare * extracharge;
+                    return totalFare;
+                }
+                else if (entrymode == "Sea")
+                {
+                    double baseFare = 50 + DistFromSeaCheckpoint * 0.22; //subjected to change  
+                    double totalFare = baseFare * extracharge;
+                    return totalFare;
+                }
+                else if (entrymode == "Land")
+                {
+                    double baseFare = 50 + DistFromLandCheckpoint * 0.22; //subjected to change  
+                    double totalFare = baseFare * extracharge;
+                    return totalFare;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            else if (entrydate.Hour == 0 && entrydate.Hour < 6)
+            {
+                double extracharge = 0.5;
+
+                if (entrymode == "Air")
+                {
+                    double baseFare = 50 + DistFromAirCheckpoint * 0.22; //subjected to change  
+                    double totalFare = baseFare * extracharge;
+                    return totalFare;
+                }
+                else if (entrymode == "Sea")
+                {
+                    double baseFare = 50 + DistFromSeaCheckpoint * 0.22; //subjected to change  
+                    double totalFare = baseFare * extracharge;
+                    return totalFare;
+                }
+                else if (entrymode == "Land")
+                {
+                    double baseFare = 50 + DistFromLandCheckpoint * 0.22; //subjected to change  
+                    double totalFare = baseFare * extracharge;
+                    return totalFare;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            else
+            {
+                if (entrymode == "Air")
+                {
+                    double baseFare = 50 + DistFromAirCheckpoint * 0.22; //subjected to change  
+                    return baseFare;
+                }
+                else if (entrymode == "Sea")
+                {
+                    double baseFare = 50 + DistFromSeaCheckpoint * 0.22; //subjected to change  
+                    return baseFare;
+                }
+                else if (entrymode == "Land")
+                {
+                    double baseFare = 50 + DistFromLandCheckpoint * 0.22; //subjected to change  
+                    return baseFare;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
         }
 
         public bool IsAvailable()
