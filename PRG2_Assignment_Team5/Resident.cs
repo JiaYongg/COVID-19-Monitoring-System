@@ -27,16 +27,17 @@ namespace PRG2_Assignment_Team5
 
             if (lastTravel.ShnStay != null)
             {
-                return 200 + 20 + 1000;
+                return (200 + 20 + 1000) * 1.07;
             }
             else if (shnDuration == 7)
             {
-                return 200 + 20;
+                return (200 + 20) * 1.07;
             }
             else
             {
-                return 0;
+                return 200 * 1.07; 
             }
+            
         }
 
         public override string ToString()
