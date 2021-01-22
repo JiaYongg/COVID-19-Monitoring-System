@@ -1,4 +1,6 @@
-﻿namespace PRG2_Assignment_Team5
+﻿using System;
+
+namespace PRG2_Assignment_Team5
 {
     class Visitor : Person
     {
@@ -13,18 +15,23 @@
 
         public override double CalculateSHNCharges()
         {
-            int lastItemIndex = TravelEntryList.Count - 1;
-            TravelEntry lastTravel = TravelEntryList[lastItemIndex];
-
-            if (lastTravel.ShnStay != null)
+            for (int i = 0; i < TravelEntryList.Count; i++)                     // assuming that there can only be 1 unpaid shn bill at any one time
             {
-                double travelCost = lastTravel.ShnStay.CalculateTravelCost(lastTravel.EntryMode, lastTravel.EntryDate);
-                return travelCost + 200 + 2000;
+                if (TravelEntryList[i].IsPaid == false && TravelEntryList[i].ShnEndDate < DateTime.Now)
+                {
+                    TravelEntry unpaidTe = TravelEntryList[i];
+                    if (unpaidTe.ShnStay != null)                               // SHNFacility object exists in ShnStay
+                    {
+                        double travelCost = unpaidTe.ShnStay.CalculateTravelCost(unpaidTe.EntryMode, unpaidTe.EntryDate);
+                        return (200 + travelCost + 2000) * 1.07;
+                    }
+                    else
+                    {
+                        return (200 + 80) * 1.07;
+                    }
+                }
             }
-            else
-            {
-                return 200 + 80;
-            }
+            return -1;
         }
 
         public override string ToString()

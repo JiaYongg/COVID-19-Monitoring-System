@@ -21,23 +21,28 @@ namespace PRG2_Assignment_Team5
         // methods
         public override double CalculateSHNCharges()
         {
-            int lastItemIndex = TravelEntryList.Count - 1;
-            TravelEntry lastTravel = TravelEntryList[lastItemIndex];
-            int shnDuration = lastTravel.EntryDate.Day - lastTravel.ShnEndDate.Day;
+            for (int i = 0; i < TravelEntryList.Count; i++)                     // assuming that there can only be 1 unpaid shn bill at any one time
+            {
+                if (TravelEntryList[i].IsPaid == false && TravelEntryList[i].ShnEndDate < DateTime.Now)
+                {
+                    TravelEntry unpaidTe = TravelEntryList[i];
+                    int ShnDuration = unpaidTe.ShnEndDate.Day - unpaidTe.EntryDate.Day;
 
-            if (lastTravel.ShnStay != null)
-            {
-                return (200 + 20 + 1000) * 1.07;
+                    if (unpaidTe.ShnStay != null)                               // SHNFacility object exists in ShnStay
+                    {
+                        return (200 + 20 + 1000) * 1.07;
+                    }
+                    else if (ShnDuration == 7)
+                    {
+                        return (200 + 20) * 1.07;
+                    }
+                    else
+                    {
+                        return (200 * 1.07);
+                    }
+                }
             }
-            else if (shnDuration == 7)
-            {
-                return (200 + 20) * 1.07;
-            }
-            else
-            {
-                return 200 * 1.07; 
-            }
-            
+            return -1;
         }
 
         public override string ToString()
