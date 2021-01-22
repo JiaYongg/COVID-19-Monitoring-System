@@ -51,5 +51,10 @@ namespace PRG2_Assignment_Team5
             //collocation = Console.ReadLine();
             CollectionLocation = collocation;
         }
+
+        public override string ToString()
+        {
+            return "Serial No: " + SerialNo + "\tCollection Location: " + CollectionLocation + "\tExpiry Date: " + ExpiryDate.ToString();
+        }
     }
 }
