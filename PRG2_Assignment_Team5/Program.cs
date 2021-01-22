@@ -22,21 +22,24 @@ namespace PRG2_Assignment_Team5
                 // generic data
                 string type = data[0];
                 string name = data[1];
+                
+                // for travel entry class
+                string travelEntryLastCountry = data[9];
+                string travelEntryMode = data[10];
                 DateTime travelEntryDate = Convert.ToDateTime(data[11]);
                 DateTime travelShnEndDate = Convert.ToDateTime(data[12]);
                 bool travelIsPaid = Convert.ToBoolean(data[14]);
                 string facilityName = data[15];
-
+                
                 // residents data
                 string address = data[2];
+                DateTime lastLeftCountry = Convert.ToDateTime(data[3]);
+                        // for tokens class, partial participation
                 string tokenSn = data[6];
                 string tokenColLocation = data[7];
                 DateTime tokenExpiryDate = Convert.ToDateTime(data[8]);
-                string travelEntryLastCountry = data[9];
-                string travelEntryMode = data[10];
 
                 // visitors data
-                DateTime lastLeftCountry = Convert.ToDateTime(data[3]);
                 string passportNo = data[4];
                 string nationality = data[5];
 
