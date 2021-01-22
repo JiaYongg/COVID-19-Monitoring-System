@@ -43,19 +43,19 @@ namespace PRG2_Assignment_Team5
                 if (entrymode == "Air")
                 {
                     double baseFare = 50 + DistFromAirCheckpoint * 0.22; //subjected to change  
-                    double totalFare = baseFare * extracharge;
+                    double totalFare = (baseFare * extracharge) + baseFare;
                     return totalFare;
                 }
                 else if (entrymode == "Sea")
                 {
                     double baseFare = 50 + DistFromSeaCheckpoint * 0.22; //subjected to change  
-                    double totalFare = baseFare * extracharge;
+                    double totalFare = (baseFare * extracharge) + baseFare;
                     return totalFare;
                 }
                 else if (entrymode == "Land")
                 {
                     double baseFare = 50 + DistFromLandCheckpoint * 0.22; //subjected to change  
-                    double totalFare = baseFare * extracharge;
+                    double totalFare = (baseFare * extracharge) + baseFare;
                     return totalFare;
                 }
                 else
@@ -70,19 +70,19 @@ namespace PRG2_Assignment_Team5
                 if (entrymode == "Air")
                 {
                     double baseFare = 50 + DistFromAirCheckpoint * 0.22; //subjected to change  
-                    double totalFare = baseFare * extracharge;
+                    double totalFare = (baseFare * extracharge) + baseFare;
                     return totalFare;
                 }
                 else if (entrymode == "Sea")
                 {
                     double baseFare = 50 + DistFromSeaCheckpoint * 0.22; //subjected to change  
-                    double totalFare = baseFare * extracharge;
+                    double totalFare = (baseFare * extracharge) + baseFare;
                     return totalFare;
                 }
                 else if (entrymode == "Land")
                 {
                     double baseFare = 50 + DistFromLandCheckpoint * 0.22; //subjected to change  
-                    double totalFare = baseFare * extracharge;
+                    double totalFare = (baseFare * extracharge) + baseFare;
                     return totalFare;
                 }
                 else
