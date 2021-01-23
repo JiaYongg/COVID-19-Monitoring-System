@@ -53,7 +53,12 @@ namespace PRG2_Assignment_Team5
                         }
                         else
                         {
+                            Visitor v = (Visitor) query;
+                            Console.WriteLine("\n{0, -10} {1, -25} ", "Passport No.", "Nationality");
+                            Console.WriteLine("{0, -10} {1, -25} ", v.PassportNo, v.Nationality);
 
+                            PrintTravelEntry(v);
+                            PrintSafeEntry(v);
                         }
                     }
                     else
@@ -147,7 +152,7 @@ namespace PRG2_Assignment_Team5
             int entMin = Convert.ToInt32(entryDate[4]);
             DateTime travelEntryDate = new DateTime(entYear, entMonth, entDay, entHour, entMin, 0);
 
-            string[] exitDate = data[11].Split('/', ' ', ':');
+            string[] exitDate = data[12].Split('/', ' ', ':');
             int exitYear = Convert.ToInt32(exitDate[2]);
             int exitMonth = Convert.ToInt32(exitDate[1]);
             int exitDay = Convert.ToInt32(exitDate[0]);
@@ -275,7 +280,7 @@ namespace PRG2_Assignment_Team5
         {
             if (p.SafeEntryList.Count > 0)
             {
-                Console.WriteLine("\n--------------------------------------------------- Safe Entry Details ---------------------------------------------------");
+                Console.WriteLine("\n-------------------------------------- Safe Entry Details --------------------------------------");
                 Console.WriteLine("{0, -15} {1, -15} {2, -25}", "Arrived From", "Entry Mode", "Entry Date");
 
                 foreach (SafeEntry se in p.SafeEntryList)
@@ -298,14 +303,14 @@ namespace PRG2_Assignment_Team5
         {
             if(r.token != null)
             {
-                Console.WriteLine("\n--------------------------------------------------- TraceTogether Token Details ---------------------------------------------------");
+                Console.WriteLine("\n--------------------------------------------------- TraceTogether Token Details ----------------------------------------------");
                 string eligibility = "No";
                 if (r.token.IsEligibleForReplacement())
                 {
                     eligibility = "Yes";
                 }
-                Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -15}", "Serial No.", "Collection Location", "Expiry Date", "Replacement Eligiblity");
-                Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -15}", r.token.SerialNo, r.token.CollectionLocation, r.token.ExpiryDate.ToString(), eligibility);
+                Console.WriteLine("{0, -15} {1, -25} {2, -25} {3, -15}", "Serial No.", "Collection Location", "Expiry Date", "Replacement Eligiblity");
+                Console.WriteLine("{0, -15} {1, -25} {2, -25} {3, -15}", r.token.SerialNo, r.token.CollectionLocation, r.token.ExpiryDate.ToString(), eligibility);
             }
             else
             {
@@ -316,7 +321,7 @@ namespace PRG2_Assignment_Team5
         // Display Menu - to add
         static void DisplayMenu()
         {
-            Console.WriteLine("COVID-19 Monitoring System");
+            Console.WriteLine("\nCOVID-19 Monitoring System");
             Console.WriteLine("[1]\tView Visitors");
             Console.WriteLine("[2]\tSearch Person");
             Console.WriteLine("[0]\tExit");
