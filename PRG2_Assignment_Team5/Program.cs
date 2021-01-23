@@ -19,7 +19,7 @@ namespace PRG2_Assignment_Team5
             List<Person> personList = new List<Person>();
             List<BusinessLocation> businessLocationList = new List<BusinessLocation>();
             List<SHNFacility> shnFacilities = new List<SHNFacility>();
-            InitSHNFacilityData(shnFacilities);
+            shnFacilities = InitSHNFacilityData(shnFacilities);
             InitPersonData(personList, shnFacilities);
 
             while (true)
@@ -172,7 +172,7 @@ namespace PRG2_Assignment_Team5
             }
         }
 
-        static void InitSHNFacilityData(List<SHNFacility> shnFacilityList) // fetches API response and deserialize it to a list
+        static List<SHNFacility> InitSHNFacilityData(List<SHNFacility> shnFacilityList) // fetches API response and deserialize it to a list
         {
             using (HttpClient client = new HttpClient())
             {
@@ -189,6 +189,7 @@ namespace PRG2_Assignment_Team5
                     string data = readTask.Result;
                     shnFacilityList = JsonConvert.DeserializeObject<List<SHNFacility>>(data);
                 }
+                return shnFacilityList;
             }
         }
 
