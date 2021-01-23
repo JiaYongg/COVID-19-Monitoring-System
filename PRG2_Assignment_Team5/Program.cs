@@ -32,6 +32,41 @@ namespace PRG2_Assignment_Team5
                 {
                     ListVisitors(personList);
                 }
+
+                else if (selection == "2")
+                {
+                    Console.Write("Enter Name of Person to Search: ");
+                    string searchP = Console.ReadLine();
+                    Person query = SearchPerson(personList, searchP);
+                    
+                    if (query != null)
+                    {
+                        if (query is Resident)
+                        {
+                            Resident r = (Resident) query;
+                            Console.WriteLine("\n{0, -10} {1, -20} {2, -20}", "Name", "Address", "Last Left Country Date");
+                            Console.WriteLine("{0, -10} {1, -20} {2, -15}", r.Name, r.Address, r.LastLeftCountry.ToString("dd/MM/yyyy"));
+
+                            PrintTravelEntry(r);
+                            PrintSafeEntry(r);
+                            DisplayTokenDetails(r);
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
+                    }
+                }
+
+                else if (selection == "0")
+                {
+                    Console.WriteLine("You have exited the program.");
+                    break;
+                }
             }
         }
 
@@ -130,26 +165,15 @@ namespace PRG2_Assignment_Team5
             // if resident stayed in a shnFacility
             if (facilityName != "")
             {
-                //bool found = false;
                 foreach (SHNFacility facility in shnList)
                 {
                     if (facilityName == facility.FacilityName)
                     {
-                        //found = true;
                         personTravelEntry.AssignSHNFacility(facility);
                         break;
                     }
                 }
-                //if (found)
-                //{
-                //    Console.WriteLine("{0} successfully assigned to {1}", data[1], personTravelEntry.ShnStay.FacilityName);
-                //}
-                //else
-                //{
-                //    Console.WriteLine("Facility not found!");
-                //}
             }
-
             return personTravelEntry;
         }
 
@@ -207,37 +231,97 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("\n");
         }
 
+        static Person SearchPerson(List<Person> pList, string name)
+        {
+            foreach (Person p in pList)
+            {
+                if (p.Name.ToLower() == name.ToLower())
+                {
+                    return p;
+                }
+            }
+            return null;
+        }
+
+        static void PrintTravelEntry(Person p)
+        {
+            if (p.TravelEntryList.Count > 0)
+            {
+                Console.WriteLine("\n--------------------------------------------------- Travel Entry Details ---------------------------------------------------");
+                Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -25} {4, -25} {5, -20}", "Arrived From", "Entry Mode", "Entry Date", "SHN End Date", "SHN Facility Residence", "Payment Status");
+
+                foreach (TravelEntry e in p.TravelEntryList)
+                {
+                    string facName = "";
+                    string paymentStatus = "Unpaid";
+                    if (e.ShnStay != null)
+                    {
+                        facName = e.ShnStay.FacilityName;
+                    }
+                    if (e.IsPaid)
+                    {
+                        paymentStatus = "Paid";
+                    }
+                    Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -25} {4, -25} {5, -20}\n", e.LastCountryOfEmbarkation, e.EntryMode, e.EntryDate, e.ShnEndDate, facName, paymentStatus);
+                }
+            }
+            else
+            {
+                Console.WriteLine("{0} does not have entry records.", p.Name);
+            }
+        }
+        
+        static void PrintSafeEntry(Person p)
+        {
+            if (p.SafeEntryList.Count > 0)
+            {
+                Console.WriteLine("\n--------------------------------------------------- Safe Entry Details ---------------------------------------------------");
+                Console.WriteLine("{0, -15} {1, -15} {2, -25}", "Arrived From", "Entry Mode", "Entry Date");
+
+                foreach (SafeEntry se in p.SafeEntryList)
+                {
+                    string checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
+                    if (se.CheckOut == null)
+                    {
+                        checkOutTime = "Not checked out";
+                    }
+                    Console.WriteLine("{0, -15} {1, -15} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
+                }
+            }
+            else
+            {
+                Console.WriteLine("{0} does not have any Safe Entry records.", p.Name);
+            }
+        }
+
+        static void DisplayTokenDetails(Resident r)
+        {
+            if(r.token != null)
+            {
+                Console.WriteLine("\n--------------------------------------------------- TraceTogether Token Details ---------------------------------------------------");
+                string eligibility = "No";
+                if (r.token.IsEligibleForReplacement())
+                {
+                    eligibility = "Yes";
+                }
+                Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -15}", "Serial No.", "Collection Location", "Expiry Date", "Replacement Eligiblity");
+                Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -15}", r.token.SerialNo, r.token.CollectionLocation, r.token.ExpiryDate.ToString(), eligibility);
+            }
+            else
+            {
+                Console.WriteLine("{0} does not have a token.", r.Name);
+            }
+        }
+
         // Display Menu - to add
         static void DisplayMenu()
         {
             Console.WriteLine("COVID-19 Monitoring System");
             Console.WriteLine("[1]\tView Visitors");
             Console.WriteLine("[2]\tSearch Person");
+            Console.WriteLine("[0]\tExit");
             Console.WriteLine("---------------------------");
         }
 
     }
 }
-
-
-//
-
-//if (facilityName != "")
-//{
-//    bool found = false;
-
-//    foreach (SHNFacility shnFac in shnFacilities)
-//    {
-//        if (facilityName == shnFac.FacilityName)
-//        {
-//            found = true;
-//            rsdTravelEntry.AssignSHNFacility(shnFac);
-//            break;
-//        }
-//    }
-
-//    if (!found)
-//    {
-//        Console.WriteLine("Facility not found.");
-//    }
-//}   
