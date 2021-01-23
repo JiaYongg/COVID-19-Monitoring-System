@@ -1,6 +1,14 @@
-﻿using System;
+﻿//============================================================
+// Student Number : S10208161, S10202579
+// Student Name : Jordan Choi, Poh Jia Yong
+// Module Group : T01
+//============================================================
+using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace PRG2_Assignment_Team5
 {
@@ -10,9 +18,12 @@ namespace PRG2_Assignment_Team5
         {
             List<Person> personList = new List<Person>();
             List<BusinessLocation> businessLocationList = new List<BusinessLocation>();
+            List<SHNFacility> sHNFacilities = new List<SHNFacility>();
+            InitSHNFacilityData(sHNFacilities);
 
         }
-        static void InitPersonData(List<Person> pList)
+
+        static void InitPersonData(List<Person> pList) // reads Person csv and create a Person object, can be either visitor or resident
         {
             string[] csvlines = File.ReadAllLines("Person.csv");
             for (int i = 1; i < csvlines.Length; i++) // i starts from 1 to remove the header
@@ -31,10 +42,9 @@ namespace PRG2_Assignment_Team5
                 bool travelIsPaid = Convert.ToBoolean(data[14]);
                 string facilityName = data[15];
                 
-                // residents data
-                string address = data[2];
-                DateTime lastLeftCountry = Convert.ToDateTime(data[3]);
-                        // for tokens class, partial participation
+                
+                // for tokens class, partial participation
+                
                 string tokenSn = data[6];
                 string tokenColLocation = data[7];
                 DateTime tokenExpiryDate = Convert.ToDateTime(data[8]);
@@ -47,11 +57,25 @@ namespace PRG2_Assignment_Team5
 
                 if (type == "resident")
                 {
-                    Resident rsd = new Resident(name, address, lastLeftCountry);
-                    pList.Add(rsd);                                                 // should be no problems
-                    rsd.AddTravelEntry(new TravelEntry(travelEntryLastCountry, travelEntryMode, travelEntryDate));
-                    // need to add if condition to skip creation of token if is null or ""
-                    rsd.token = new TraceTogetherToken(tokenSn, tokenColLocation, tokenExpiryDate);
+                    if (data[2] != "")
+                    {
+                        string address = data[2];
+
+                        if (data[3] != "")
+                        {
+                            DateTime lastLeftCountry = Convert.ToDateTime(data[3]);
+
+                            Resident rsd = new Resident(name, address, lastLeftCountry);
+                            pList.Add(rsd);                                                 // should be no problems
+                            rsd.AddTravelEntry(new TravelEntry(travelEntryLastCountry, travelEntryMode, travelEntryDate));
+                            // need to add if condition to skip creation of token if is null or ""                   
+                            if (tokenSn != "")
+                            {
+                                rsd.token = new TraceTogetherToken(tokenSn, tokenColLocation, tokenExpiryDate);
+                            }
+                        }
+                        
+                    }
                 }
                 else
                 {
@@ -62,7 +86,7 @@ namespace PRG2_Assignment_Team5
             }
         }
 
-        static void InitBusinessLocationData(List<BusinessLocation> bList)
+        static void InitBusinessLocationData(List<BusinessLocation> bList) // reads BusinessLocation csv and creates a BusinessLocation object
         {
             string[] csvlines = File.ReadAllLines("BusinessLocationcsv");
             for (int i = 1; i < csvlines.Length; i++) // i start from 1 to remove the header
@@ -78,6 +102,31 @@ namespace PRG2_Assignment_Team5
                     break;
                 }
                
+            }
+        }
+
+        static void InitSHNFacilityData(List<SHNFacility> shnFacilityList) // fetches API response and deserialize it to a list
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                //GET request
+                client.BaseAddress = new Uri("https://covidmonitoringapiprg2.azurewebsites.net/");
+                Task<HttpResponseMessage> responseTask = client.GetAsync("facility");
+                responseTask.Wait();
+                //retrieve response
+                HttpResponseMessage result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    Task<string> readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    string data = readTask.Result;
+                    shnFacilityList = JsonConvert.DeserializeObject<List<SHNFacility>>(data);
+
+                    foreach(SHNFacility shn in shnFacilityList)
+                    {
+                        Console.WriteLine(shn);
+                    }
+                }
             }
         }
 
