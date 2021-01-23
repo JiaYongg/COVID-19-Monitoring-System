@@ -21,8 +21,18 @@ namespace PRG2_Assignment_Team5
             List<SHNFacility> shnFacilities = new List<SHNFacility>();
             InitSHNFacilityData(shnFacilities);
             InitPersonData(personList, shnFacilities);
-            ListVisitors(personList);
 
+            while (true)
+            {
+                DisplayMenu();
+                Console.Write("Enter your selection: ");
+                string selection = Console.ReadLine();
+                
+                if (selection == "1")
+                {
+                    ListVisitors(personList);
+                }
+            }
         }
 
         static void InitPersonData(List<Person> pList, List<SHNFacility> shnFacilities) // reads Person csv and create a Person object, can be either visitor or resident
@@ -185,23 +195,26 @@ namespace PRG2_Assignment_Team5
 
         static void ListVisitors(List<Person> pList)
         {
-            Console.WriteLine("{0, -10} {1, -15} {2, -15}", "Name", "Passport No.", "Nationality");
-            foreach(Person p in pList)
+            Console.WriteLine("\n{0, -10} {1, -15} {2, -15}", "Name", "Passport No.", "Nationality");
+            foreach (Person p in pList)
             {
                 if (p is Visitor)
                 {
-                    Visitor v = (Visitor) p;
+                    Visitor v = (Visitor)p;
                     Console.WriteLine("{0, -10} {1, -15} {2, -15}", p.Name, v.PassportNo, v.Nationality);
                 }
             }
+            Console.WriteLine("\n");
         }
 
-        //// Display Menu - to add
-        //static void DisplayMenu()
-        //{
-        //    Console.WriteLine("COVID-19 Monitoring System");
-
-        //}
+        // Display Menu - to add
+        static void DisplayMenu()
+        {
+            Console.WriteLine("COVID-19 Monitoring System");
+            Console.WriteLine("[1]\tView Visitors");
+            Console.WriteLine("[2]\tSearch Person");
+            Console.WriteLine("---------------------------");
+        }
 
     }
 }
