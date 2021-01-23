@@ -56,7 +56,9 @@ namespace PRG2_Assignment_Team5
 
                     if (data[9] != "")
                     {
-                        rsd.AddTravelEntry(CreateTravelEntry(data));
+                        TravelEntry te = CreateTravelEntry(data);
+                        
+                        rsd.AddTravelEntry(te);
 
                         //
 
@@ -119,7 +121,15 @@ namespace PRG2_Assignment_Team5
             int entMin = Convert.ToInt32(entryDate[4]);
             DateTime travelEntryDate = new DateTime(entYear, entMonth, entDay, entHour, entMin, 0);
 
-            DateTime travelShnEndDate = Convert.ToDateTime(data[12]);
+            string[] exitDate = data[11].Split('/', ' ', ':');
+            int exitYear = Convert.ToInt32(exitDate[2]);
+            int exitMonth = Convert.ToInt32(exitDate[1]);
+            int exitDay = Convert.ToInt32(exitDate[0]);
+            int exitHour = Convert.ToInt32(exitDate[3]);
+            int exitMin = Convert.ToInt32(exitDate[4]);
+
+            DateTime travelShnEndDate = new DateTime(exitYear, exitMonth, exitDay, exitHour, exitMin, 0);
+
             string travelIsPaid = data[13];
             TravelEntry vstTravelEntry = new TravelEntry(travelEntryLastCountry, travelEntryMode, travelEntryDate);
             vstTravelEntry.EntryDate = travelEntryDate;
@@ -175,13 +185,13 @@ namespace PRG2_Assignment_Team5
 
         static void ListVisitors(List<Person> pList)
         {
-            Console.WriteLine("{0, -10} {1, -10} {2, -10}", "Name", "Passport No", "Nationality");
+            Console.WriteLine("{0, -10} {1, -15} {2, -15}", "Name", "Passport No.", "Nationality");
             foreach(Person p in pList)
             {
                 if (p is Visitor)
                 {
                     Visitor v = (Visitor) p;
-                    Console.WriteLine("{0, -10} {1, -10} {2, -10}", p.Name, v.PassportNo, v.Nationality);
+                    Console.WriteLine("{0, -10} {1, -15} {2, -15}", p.Name, v.PassportNo, v.Nationality);
                 }
             }
         }

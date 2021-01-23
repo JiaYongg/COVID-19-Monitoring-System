@@ -14,9 +14,9 @@ namespace PRG2_Assignment_Team5
     {
         public string Name { get; set; }
 
-        public List<SafeEntry> SafeEntryList { get; set; } 
+        public List<SafeEntry> SafeEntryList = new List<SafeEntry>();
 
-        public List<TravelEntry> TravelEntryList { get; set; } 
+        public List<TravelEntry> TravelEntryList = new List<TravelEntry>();
 
         public Person() { }
 
