@@ -35,7 +35,7 @@ namespace PRG2_Assignment_Team5
         public void AssignSHNFacility(SHNFacility ShnFac)
         {
             ShnStay = ShnFac;
-            ShnFac.FacilityVacancy -= 1;
+            ShnStay.FacilityVacancy -= 1;
         }
 
         public void CalculateSHNDuration()

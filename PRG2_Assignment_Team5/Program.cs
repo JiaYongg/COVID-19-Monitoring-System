@@ -35,7 +35,7 @@ namespace PRG2_Assignment_Team5
             }
         }
 
-        static void InitPersonData(List<Person> pList, List<SHNFacility> shnFacilities) // reads Person csv and create a Person object, can be either visitor or resident
+        static void InitPersonData(List<Person> pList, List<SHNFacility> shnList)         // reads Person csv and create a Person object, can be either visitor or resident
         {
             string[] csvlines = File.ReadAllLines("Person.csv");
 
@@ -44,59 +44,36 @@ namespace PRG2_Assignment_Team5
                 string[] data = csvlines[i].Split(",");
 
                 // data conversion and preparation
-                // generic data
                 string type = data[0];
+
+                // generic data - all people category (residents & visitor) requires the following.
                 string name = data[1];
 
-                // visitors data
-                string passportNo = data[4];
-                string nationality = data[5];
-
-                // add person to pList, have to do conditions
                 if (type == "resident")
                 {
+                    // residents data - only resident require the following
                     string address = data[2];
+
+                    // to retrieve respective date parts
                     string[] leftDateArray = data[3].Split('/');
                     int leftYear = Convert.ToInt32(leftDateArray[2]);
                     int leftMonth = Convert.ToInt32(leftDateArray[1]);
                     int leftDay = Convert.ToInt32(leftDateArray[0]);
                     DateTime lastLeftDate = new DateTime(leftYear, leftMonth, leftDay);
+
+                    // Create new Resident object
                     Resident rsd = new Resident(name, address, lastLeftDate);
-                    pList.Add(rsd);                                                         // should be no problems
+                    pList.Add(rsd);
 
+                    // if travel records exist
                     if (data[9] != "")
-                    {
-                        TravelEntry te = CreateTravelEntry(data);
-                        
-                        rsd.AddTravelEntry(te);
-
-                        //
-
-                        //if (facilityName != "")
-                        //{
-                        //    bool found = false;
-
-                        //    foreach (SHNFacility shnFac in shnFacilities)
-                        //    {
-                        //        if (facilityName == shnFac.FacilityName)
-                        //        {
-                        //            found = true;
-                        //            rsdTravelEntry.AssignSHNFacility(shnFac);
-                        //            break;
-                        //        }
-                        //    }
-                            
-                        //    if (!found)
-                        //    {
-                        //        Console.WriteLine("Facility not found.");
-                        //    }
-                        //}   
+                    {                           
+                        rsd.AddTravelEntry(CreateTravelEntry(data, shnList));                            // assign TravelEntry object te by calling CreateTravelEntry() method and add to Resident's TravelEntryList. 
                     }
-                    
-                    // need to add if condition to skip creation of token if is null or ""                   
-                    if (data[6] != "")
+
+                    // if resident has TraceTogetherToken              
+                    if (data[6] != "")                                                          
                     {
-                        // for tokens class, partial participation
                         string tokenSn = data[6];
                         string tokenColLocation = data[7];
                         DateTime tokenExpiryDate = Convert.ToDateTime(data[8]);
@@ -105,17 +82,21 @@ namespace PRG2_Assignment_Team5
                 }
                 else
                 {
+                    // visitors data - only visitor require the following
+                    string passportNo = data[4];
+                    string nationality = data[5];
+
                     Visitor vst = new Visitor(name, passportNo, nationality);
                     pList.Add(vst);                                                 // should be no problems
                     if (data[9] != "")
                     {
-                        vst.AddTravelEntry(CreateTravelEntry(data));
+                        vst.AddTravelEntry(CreateTravelEntry(data, shnList));
                     }
                 }
             }
         }
 
-        static TravelEntry CreateTravelEntry(string[] data)
+        static TravelEntry CreateTravelEntry(string[] data, List<SHNFacility> shnList)
         {
 
             // for travel entry class
@@ -141,12 +122,35 @@ namespace PRG2_Assignment_Team5
             DateTime travelShnEndDate = new DateTime(exitYear, exitMonth, exitDay, exitHour, exitMin, 0);
 
             string travelIsPaid = data[13];
-            TravelEntry vstTravelEntry = new TravelEntry(travelEntryLastCountry, travelEntryMode, travelEntryDate);
-            vstTravelEntry.EntryDate = travelEntryDate;
-            vstTravelEntry.ShnEndDate = travelShnEndDate;
-            vstTravelEntry.IsPaid = Convert.ToBoolean(travelIsPaid);
+            TravelEntry personTravelEntry = new TravelEntry(travelEntryLastCountry, travelEntryMode, travelEntryDate);
+            personTravelEntry.EntryDate = travelEntryDate;
+            personTravelEntry.ShnEndDate = travelShnEndDate;
+            personTravelEntry.IsPaid = Convert.ToBoolean(travelIsPaid);
 
-            return vstTravelEntry;
+            // if resident stayed in a shnFacility
+            if (facilityName != "")
+            {
+                //bool found = false;
+                foreach (SHNFacility facility in shnList)
+                {
+                    if (facilityName == facility.FacilityName)
+                    {
+                        //found = true;
+                        personTravelEntry.AssignSHNFacility(facility);
+                        break;
+                    }
+                }
+                //if (found)
+                //{
+                //    Console.WriteLine("{0} successfully assigned to {1}", data[1], personTravelEntry.ShnStay.FacilityName);
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Facility not found!");
+                //}
+            }
+
+            return personTravelEntry;
         }
 
         static void InitBusinessLocationData(List<BusinessLocation> bList) // reads BusinessLocation csv and creates a BusinessLocation object
@@ -184,11 +188,6 @@ namespace PRG2_Assignment_Team5
                     readTask.Wait();
                     string data = readTask.Result;
                     shnFacilityList = JsonConvert.DeserializeObject<List<SHNFacility>>(data);
-
-                    //foreach(SHNFacility shn in shnFacilityList)
-                    //{
-                    //    Console.WriteLine(shn);
-                    //}
                 }
             }
         }
@@ -218,3 +217,26 @@ namespace PRG2_Assignment_Team5
 
     }
 }
+
+
+//
+
+//if (facilityName != "")
+//{
+//    bool found = false;
+
+//    foreach (SHNFacility shnFac in shnFacilities)
+//    {
+//        if (facilityName == shnFac.FacilityName)
+//        {
+//            found = true;
+//            rsdTravelEntry.AssignSHNFacility(shnFac);
+//            break;
+//        }
+//    }
+
+//    if (!found)
+//    {
+//        Console.WriteLine("Facility not found.");
+//    }
+//}   
