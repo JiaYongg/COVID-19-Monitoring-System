@@ -40,33 +40,7 @@ namespace PRG2_Assignment_Team5
                     Console.Write("Enter Name of Person to Search: ");
                     string searchP = Console.ReadLine();
                     Person query = SearchPerson(personList, searchP);
-                    
-                    if (query != null)
-                    {
-                        if (query is Resident)
-                        {
-                            Resident r = (Resident) query;
-                            Console.WriteLine("\n{0, -10} {1, -20} {2, -20}", "Name", "Address", "Last Left Country Date");
-                            Console.WriteLine("{0, -10} {1, -20} {2, -15}", r.Name, r.Address, r.LastLeftCountry.ToString("dd/MM/yyyy"));
-
-                            PrintTravelEntry(r);
-                            PrintSafeEntry(r);
-                            DisplayTokenDetails(r);
-                        }
-                        else
-                        {
-                            Visitor v = (Visitor) query;
-                            Console.WriteLine("\n{0, -10} {1, -25} ", "Passport No.", "Nationality");
-                            Console.WriteLine("{0, -10} {1, -25} ", v.PassportNo, v.Nationality);
-
-                            PrintTravelEntry(v);
-                            PrintSafeEntry(v);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
-                    }
+                    DisplayQueryDetails(query, searchP);
                 }
                 else if (selection == "3")
                 {
@@ -113,7 +87,28 @@ namespace PRG2_Assignment_Team5
                 {
                     DisplaySHNFacilities(shnFacilities);
                 }
+                
+                else if (selection == "9")
+                {
+                    CreateVisitor(personList);
+                }
 
+                else if (selection == "10")
+                {
+                    Console.Write("Enter Name of Person to Create Travel Entry Record: ");
+                    string searchName = Console.ReadLine();
+                    Person p = SearchPerson(personList, searchName);
+                    if (p != null)
+                    {
+                        CreateTravelEntry(p, shnFacilities);
+                        DisplayQueryDetails(p, searchName);
+                    }
+                    else
+                    {
+                        Console.WriteLine("{0} does not exist.", searchName);
+                    }
+                    
+                }
                 else if (selection == "0")
                 {
                     Console.WriteLine("You have exited the program.");
@@ -155,7 +150,7 @@ namespace PRG2_Assignment_Team5
                     // if travel records exist
                     if (data[9] != "")
                     {                           
-                        rsd.AddTravelEntry(CreateTravelEntry(data, shnList));                            // assign TravelEntry object te by calling CreateTravelEntry() method and add to Resident's TravelEntryList. 
+                        rsd.AddTravelEntry(InitTravelEntry(data, shnList));                            // assign TravelEntry object te by calling InitTravelEntry() method and add to Resident's TravelEntryList. 
                     }
 
                     // if resident has TraceTogetherToken              
@@ -177,13 +172,13 @@ namespace PRG2_Assignment_Team5
                     pList.Add(vst);                                                 // should be no problems
                     if (data[9] != "")
                     {
-                        vst.AddTravelEntry(CreateTravelEntry(data, shnList));
+                        vst.AddTravelEntry(InitTravelEntry(data, shnList));
                     }
                 }
             }
         }
 
-        static TravelEntry CreateTravelEntry(string[] data, List<SHNFacility> shnList)
+        static TravelEntry InitTravelEntry(string[] data, List<SHNFacility> shnList)
         {
 
             // for travel entry class
@@ -319,7 +314,7 @@ namespace PRG2_Assignment_Team5
             }
             else
             {
-                Console.WriteLine("{0} does not have entry records.", p.Name);
+                Console.WriteLine("{0} does not have travel entry records.", p.Name);
             }
         }
         
@@ -396,18 +391,19 @@ namespace PRG2_Assignment_Team5
         static void DisplaySHNFacilities(List<SHNFacility> facilityList)
         {
             // Header for SHN Facilities
-            Console.WriteLine("{0, -20} {1, 10} {2, 10} {3, 20} {4, 20} {5, 20} {6, 15}", "Facility Name", "Capacity", "Vacancy", "Distance from Air", "Distance from Sea", "Distance from Land", "Availability");
+            Console.WriteLine("{0, -5} {1, -5} {2, 10} {3, 10} {4, 20} {5, 20} {6, 20} {7, 15}", "Facility ID", "Facility Name", "Capacity", "Vacancy", "Distance from Air", "Distance from Sea", "Distance from Land", "Availability");
 
             // foreach loop to loop through the facilityList
-            foreach (SHNFacility fac in facilityList)
+
+            for (int i = 0; i < facilityList.Count; i++)
             {
                 string displayAvail = "No";
-                bool available = fac.IsAvailable();
+                bool available = facilityList[i].IsAvailable();
                 if (available)
                 {
                     displayAvail = "Yes";
                 }
-                Console.WriteLine("{0, -20} {1, 10} {2, 10} {3, 20} {4, 20} {5, 20} {6, 15}", fac.FacilityName, fac.FacilityCapacity, fac.FacilityVacancy, fac.DistFromAirCheckpoint, fac.DistFromSeaCheckpoint, fac.DistFromLandCheckpoint, displayAvail);
+                Console.WriteLine("[{0, -5}] {1, -20} {2, 10} {3, 10} {4, 20} {5, 20} {6, 20} {7, 15}", i+1, facilityList[i].FacilityName, facilityList[i].FacilityCapacity, facilityList[i].FacilityVacancy, facilityList[i].DistFromAirCheckpoint, facilityList[i].DistFromSeaCheckpoint, facilityList[i].DistFromLandCheckpoint, displayAvail);
             }
         }
 
@@ -460,6 +456,127 @@ namespace PRG2_Assignment_Team5
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        static void DisplayQueryDetails(Person query, string searchP)
+        {
+            if (query != null)
+            {
+                if (query is Resident)
+                {
+                    Resident r = (Resident)query;
+                    Console.WriteLine("\n{0, -10} {1, -20} {2, -20}", "Name", "Address", "Last Left Country Date");
+                    Console.WriteLine("{0, -10} {1, -20} {2, -20}", r.Name, r.Address, r.LastLeftCountry.ToString("dd/MM/yyyy"));
+
+                    PrintTravelEntry(r);
+                    PrintSafeEntry(r);
+                    DisplayTokenDetails(r);
+                }
+                else
+                {
+                    Visitor v = (Visitor) query;
+                    Console.WriteLine("\n{0, -10} {1, -10} {2, -25}", "Name", "Passport No.", "Nationality");
+                    Console.WriteLine("{0, -10} {1, -10} {2, -25}", v.Name, v.PassportNo, v.Nationality);
+                    PrintTravelEntry(v);
+                    PrintSafeEntry(v);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
+            }
+        }
+
+        static void CreateVisitor(List<Person> pList)
+        {
+            Console.WriteLine("------------- Create new visitor -------------");
+            Console.Write("Visitor Name: ");
+            string newVisitorName = Console.ReadLine();
+            Console.Write("Visitor Passport No.: ");
+            string newVisitorPpn = Console.ReadLine();
+            Console.Write("Visitor Nationality: ");
+            string newVisitorNationality = Console.ReadLine();
+
+            bool found = false;
+
+            foreach (Person p in pList)
+            {
+                if (p is Resident)
+                {
+                    continue;
+                }
+                else
+                {
+                    Visitor r = (Visitor) p;
+                    if (r.PassportNo == newVisitorPpn)
+                    {
+                        found = true;
+                    }
+                }
+            }
+
+            if (found)
+            {
+                Console.WriteLine("Visitor {0} with the passport number {1} already exist.", newVisitorPpn, newVisitorPpn);
+            }
+            else
+            {
+                pList.Add(new Visitor(newVisitorName, newVisitorPpn, newVisitorNationality));
+                Console.WriteLine("Visitor {0} created.");
+                ListVisitors(pList);
+            }
+        }
+
+        static void CreateTravelEntry(Person p, List<SHNFacility> shnLists)
+        {
+            // have to do:
+            // 1. Validation for Entry Mode input (Air/Land/Sea), 
+
+            Console.Write("Last Country of Embarkation: ");
+            string lcoe = Console.ReadLine();
+            //string entryMode = "";
+            Console.Write("Mode of Entry (Air/Land/Sea): ");
+            string entryMode = Console.ReadLine();
+            //while (entryMode != "air" || entryMode != "land" || entryMode != "sea")
+            //{
+            //Console.Write("Mode of Entry (Air/Land/Sea): ");
+            //entryMode = Console.ReadLine().ToLower();
+
+            //if (entryMode != "air" || entryMode != "land" || entryMode != "sea")
+            //{
+            //    Console.WriteLine("Entry mode must be either by 'Air', 'Land' or 'Sea'");
+            //}
+            //}
+
+        Console.Write("Date of Entry (YYYY/MM/dd HH:mm): ");
+            DateTime entryDate = Convert.ToDateTime(Console.ReadLine());
+
+            TravelEntry te = new TravelEntry(lcoe, entryMode, entryDate);
+            te.CalculateSHNDuration();
+
+            if (te.ShnEndDate.Subtract(te.EntryDate).Days == 14) 
+            {
+                DisplaySHNFacilities(shnLists);
+                try
+                {
+                    Console.Write("Enter Facility ID to assign {0}: ", p.Name);
+                    int facilityIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+                    SHNFacility chosenFac = shnLists[facilityIndex];
+                    te.AssignSHNFacility(chosenFac);
+                }
+                catch(IndexOutOfRangeException)
+                {
+                    Console.WriteLine("Facility ID inputted does not exist!");
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Please input the respective ID of the chosen facility in integer");
+                }
+            }
+
+            te.IsPaid = false;
+            p.AddTravelEntry(te);
+            Console.WriteLine("Travel Entry record for {0} has been created.", p.Name);
 
         }
 
@@ -473,6 +590,8 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[4]\tView Business Locations");
             Console.WriteLine("[5]\tEdit Business Location Capacity");
             Console.WriteLine("[8]\tList SHN Facilities");
+            Console.WriteLine("[9]\tCreate New Visitor");
+            Console.WriteLine("[10]\tCreate Travel Entry Record");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("---------------------------");
         }

@@ -40,6 +40,7 @@ namespace PRG2_Assignment_Team5
 
         public void CalculateSHNDuration()
         {
+            // these validations require to be converted to lowercase or constant.
             if (LastCountryOfEmbarkation == "New Zealand" || LastCountryOfEmbarkation == "Vietnam")
             {
                 ShnEndDate = EntryDate.AddDays(0);
