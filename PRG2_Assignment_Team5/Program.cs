@@ -66,6 +66,58 @@ namespace PRG2_Assignment_Team5
                         Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
                     }
                 }
+                else if (selection == "3")
+                {
+                    //assign or replace TraceTogetherToken
+                    Console.Write("Enter Name of Person to Search: ");
+                    string searchP = Console.ReadLine();
+                    Person person = SearchPerson(personList, searchP);
+
+                    if (person != null)
+                    {
+                        if (person is Resident)
+                        {
+                            Resident r = (Resident) person;
+                            if (r.token.SerialNo != "" && r.token.IsEligibleForReplacement() == true)
+                            {
+                                Console.WriteLine("\nToken found but has expired!");
+                                Console.Write("Enter new serial number: ");
+                                string sn = Console.ReadLine();
+                                Console.Write("Enter collection location: ");
+                                string colLocation = Console.ReadLine();
+                                r.token.ReplaceToken(sn, colLocation);
+                                Console.WriteLine("\nToken has been sucessfully replaced for {0}!", r.Name);
+                                Console.WriteLine("{0}: {1}", "New Serial Number", r.token.SerialNo);
+                                Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+
+                            }
+                            else if (r.token.SerialNo == "")
+                            {
+                                Console.WriteLine("\nToken not found ! Follow steps below to assign a TraceTogether Token");
+                                string sn = Console.ReadLine();
+                                Console.Write("Enter collection location: ");
+                                string colLocation = Console.ReadLine();
+                                r.token.SerialNo = sn;
+                                r.token.CollectionLocation = colLocation;
+                                Console.WriteLine("Token sucessfully assigned to {0}!", r.Name);
+                                Console.WriteLine("{0}: {1}", "Serial Number", r.token.SerialNo);
+                                Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+                            }
+                            else
+                            {
+                                Console.WriteLine("{0} already owns a TraceTogether Token !", r.Name);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("{0} is a visitor and cannot be assigned with a token.", person.Name);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
+                    }
+                }
 
                 else if (selection == "0")
                 {
@@ -324,6 +376,7 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("\nCOVID-19 Monitoring System");
             Console.WriteLine("[1]\tView Visitors");
             Console.WriteLine("[2]\tSearch Person");
+            Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("---------------------------");
         }
