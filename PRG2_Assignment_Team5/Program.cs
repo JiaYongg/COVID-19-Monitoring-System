@@ -255,6 +255,11 @@ namespace PRG2_Assignment_Team5
                     readTask.Wait();
                     string data = readTask.Result;
                     shnFacilityList = JsonConvert.DeserializeObject<List<SHNFacility>>(data);
+                    
+                    foreach(SHNFacility fac in shnFacilityList)
+                    {
+                        fac.FacilityVacancy = fac.FacilityCapacity;
+                    }
                 }
                 return shnFacilityList;
             }

@@ -116,7 +116,7 @@ namespace PRG2_Assignment_Team5
 
         public bool IsAvailable()
         {
-            if (FacilityCapacity <= FacilityVacancy)
+            if (FacilityVacancy != 0)
             {
                 return true;
             }
