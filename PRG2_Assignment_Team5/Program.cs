@@ -104,6 +104,10 @@ namespace PRG2_Assignment_Team5
                 {
                     DisplayBusinessLocations(businessLocationList);
                 }
+                else if (selection == "5")
+                {
+                    EditBusinessLocationCapacity(businessLocationList);
+                }
 
                 else if (selection == "8")
                 {
@@ -234,8 +238,9 @@ namespace PRG2_Assignment_Team5
                 string businessName = data[0];
                 string branchCode = data[1];
                 int maxCapacity = Convert.ToInt32(data[2]);
-                bList.Add(new BusinessLocation(businessName, branchCode, maxCapacity));
-               
+                BusinessLocation bl = new BusinessLocation(businessName, branchCode, maxCapacity);
+                bl.MaximumCapacity = maxCapacity;
+                bList.Add(bl);
             }
         }
 
@@ -408,11 +413,52 @@ namespace PRG2_Assignment_Team5
 
         static void DisplayBusinessLocations(List<BusinessLocation> bList)
         {
-            Console.WriteLine("{0, -20} {1, 10} {2, 10}", "Business Name", "Branch Code", "Max Capacity");
+            Console.WriteLine("{0, -20} {1, 15} {2, 15}", "Business Name", "Branch Code", "Max Capacity");
 
             foreach (BusinessLocation bl in bList)
             {
-                Console.WriteLine("{0, -20} {1, 10} {2, 10}", bl.BusinessName, bl.BranchCode, bl.MaximumCapacity);
+                Console.WriteLine("{0, -20} {1, 15} {2, 15}", bl.BusinessName, bl.BranchCode, bl.MaximumCapacity);
+            }
+
+        }
+
+        static BusinessLocation SearchBusinessLocation(List<BusinessLocation> bList, string bizcode)
+        {
+            foreach(BusinessLocation bl in bList)
+            {
+                if (bl.BranchCode == bizcode)
+                {
+                    return bl;
+                }
+            }
+            return null;
+        }
+
+        static void EditBusinessLocationCapacity(List<BusinessLocation> bList)
+        {
+            try
+            {
+                Console.Write("Enter Business branch code: ");
+                string bizcode = Console.ReadLine();
+                BusinessLocation businessLocation = SearchBusinessLocation(bList, bizcode);
+
+                if (businessLocation != null)
+                {
+                    Console.WriteLine("Business Location found with a Max Capacity of {0} !", businessLocation.MaximumCapacity);
+                    Console.Write("Enter the number of Max Capacity you would like to change it to: ");
+                    int maxCap = Convert.ToInt32(Console.ReadLine());
+
+                    businessLocation.MaximumCapacity = maxCap;
+                    Console.WriteLine("Maximum Capacity of {0} has been updated !", businessLocation.BusinessName);
+                }
+                else
+                {
+                    Console.WriteLine("Sorry, branch code of {0} is not found !", bizcode);
+                }
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
         }
@@ -425,6 +471,7 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[2]\tSearch Person");
             Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
             Console.WriteLine("[4]\tView Business Locations");
+            Console.WriteLine("[5]\tEdit Business Location Capacity");
             Console.WriteLine("[8]\tList SHN Facilities");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("---------------------------");
