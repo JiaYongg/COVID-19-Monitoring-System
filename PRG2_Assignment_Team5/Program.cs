@@ -3,6 +3,7 @@
 // Student Name : Jordan Choi, Poh Jia Yong
 // Module Group : T01
 //============================================================
+
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -117,6 +118,11 @@ namespace PRG2_Assignment_Team5
                     {
                         Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
                     }
+                }
+
+                else if (selection == "8")
+                {
+                    DisplaySHNFacilities(shnFacilities);
                 }
 
                 else if (selection == "0")
@@ -285,7 +291,6 @@ namespace PRG2_Assignment_Team5
                     Console.WriteLine("{0, -10} {1, -15} {2, -15}", p.Name, v.PassportNo, v.Nationality);
                 }
             }
-            Console.WriteLine("\n");
         }
 
         static Person SearchPerson(List<Person> pList, string name)
@@ -370,6 +375,24 @@ namespace PRG2_Assignment_Team5
             }
         }
 
+        static void DisplaySHNFacilities(List<SHNFacility> facilityList)
+        {
+            // Header for SHN Facilities
+            Console.WriteLine("{0, -20} {1, 10} {2, 10} {3, 20} {4, 20} {5, 20} {6, 15}", "Facility Name", "Capacity", "Vacancy", "Distance from Air", "Distance from Sea", "Distance from Land", "Availability");
+
+            // foreach loop to loop through the facilityList
+            foreach (SHNFacility fac in facilityList)
+            {
+                string displayAvail = "No";
+                bool available = fac.IsAvailable();
+                if (available)
+                {
+                    displayAvail = "Yes";
+                }
+                Console.WriteLine("{0, -20} {1, 10} {2, 10} {3, 20} {4, 20} {5, 20} {6, 15}", fac.FacilityName, fac.FacilityCapacity, fac.FacilityVacancy, fac.DistFromAirCheckpoint, fac.DistFromSeaCheckpoint, fac.DistFromLandCheckpoint, displayAvail);
+            }
+        }
+
         // Display Menu - to add
         static void DisplayMenu()
         {
@@ -377,6 +400,7 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[1]\tView Visitors");
             Console.WriteLine("[2]\tSearch Person");
             Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
+            Console.WriteLine("[8]\tList SHN Facilities");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("---------------------------");
         }
