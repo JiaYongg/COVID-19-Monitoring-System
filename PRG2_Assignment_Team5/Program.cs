@@ -73,45 +73,25 @@ namespace PRG2_Assignment_Team5
                     string searchP = Console.ReadLine();
                     Person person = SearchPerson(personList, searchP);
 
-                    if (person != null)
+                    if (person != null && person is Resident)
                     {
-                        if (person is Resident)
+                        Resident r = (Resident) person;
+                        if (r.token != null && r.token.IsEligibleForReplacement() == true)
                         {
-                            Resident r = (Resident) person;
-                            if (r.token.SerialNo != "" && r.token.IsEligibleForReplacement() == true)
-                            {
-                                Console.WriteLine("\nToken found but has expired!");
-                                Console.Write("Enter new serial number: ");
-                                string sn = Console.ReadLine();
-                                Console.Write("Enter collection location: ");
-                                string colLocation = Console.ReadLine();
-                                r.token.ReplaceToken(sn, colLocation);
-                                Console.WriteLine("\nToken has been sucessfully replaced for {0}!", r.Name);
-                                Console.WriteLine("{0}: {1}", "New Serial Number", r.token.SerialNo);
-                                Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
-
-                            }
-                            else if (r.token.SerialNo == "")
-                            {
-                                Console.WriteLine("\nToken not found ! Follow steps below to assign a TraceTogether Token");
-                                string sn = Console.ReadLine();
-                                Console.Write("Enter collection location: ");
-                                string colLocation = Console.ReadLine();
-                                r.token.SerialNo = sn;
-                                r.token.CollectionLocation = colLocation;
-                                Console.WriteLine("Token sucessfully assigned to {0}!", r.Name);
-                                Console.WriteLine("{0}: {1}", "Serial Number", r.token.SerialNo);
-                                Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
-                            }
-                            else
-                            {
-                                Console.WriteLine("{0} already owns a TraceTogether Token !", r.Name);
-                            }
+                            ReplaceTraceTogetherToken(r);
+                        }
+                        else if (r.token == null)
+                        {
+                            AssignTraceTogetherToken(r);
                         }
                         else
                         {
-                            Console.WriteLine("{0} is a visitor and cannot be assigned with a token.", person.Name);
+                            Console.WriteLine("{0} already owns a TraceTogether Token !", r.Name);
                         }
+                    }
+                    else if (person != null && person is Visitor)
+                    {
+                        Console.WriteLine("{0} is a visitor and cannot be assigned with a token.", person.Name);
                     }
                     else
                     {
@@ -368,6 +348,34 @@ namespace PRG2_Assignment_Team5
             {
                 Console.WriteLine("{0} does not have a token.", r.Name);
             }
+        }
+
+        static void AssignTraceTogetherToken(Resident r)
+        {
+            Console.WriteLine("\nToken not found ! Follow steps below to assign a TraceTogether Token");
+            Console.Write("Enter serial number: ");
+            string sn = Console.ReadLine();
+            Console.Write("Enter collection location: ");
+            string colLocation = Console.ReadLine();
+            DateTime expiry = DateTime.Now.AddMonths(6);
+            r.token = new TraceTogetherToken(sn, colLocation, expiry);
+            Console.WriteLine("Token successfully assigned to {0}!", r.Name);
+            Console.WriteLine("{0}: {1}", "Serial Number", r.token.SerialNo);
+            Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+        }
+
+        static void ReplaceTraceTogetherToken(Resident r)
+        {
+            Console.WriteLine("\nToken found but has expired !");
+            Console.Write("Enter new serial number: ");
+            string sn = Console.ReadLine();
+            Console.Write("Enter collection location: ");
+            string colLocation = Console.ReadLine();
+            r.token.ReplaceToken(sn, colLocation);
+            r.token.ExpiryDate = DateTime.Now.AddMonths(6);
+            Console.WriteLine("\nToken has been successfully replaced for {0} !", r.Name);
+            Console.WriteLine("{0}: {1}", "New Serial Number", r.token.SerialNo);
+            Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
         }
 
         // Display Menu - to add
