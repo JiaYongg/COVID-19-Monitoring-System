@@ -25,7 +25,7 @@ namespace PRG2_Assignment_Team5
 
         public bool IsFull()
         {
-            if (MaximumCapacity >= VisitorsNow)
+            if (VisitorsNow >= MaximumCapacity)
             {
                 return true;
             }
