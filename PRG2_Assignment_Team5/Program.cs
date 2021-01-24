@@ -22,6 +22,7 @@ namespace PRG2_Assignment_Team5
             List<SHNFacility> shnFacilities = new List<SHNFacility>();
             shnFacilities = InitSHNFacilityData(shnFacilities);
             InitPersonData(personList, shnFacilities);
+            InitBusinessLocationData(businessLocationList);
 
             while (true)
             {
@@ -98,6 +99,10 @@ namespace PRG2_Assignment_Team5
                     {
                         Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
                     }
+                }
+                else if (selection == "4")
+                {
+                    DisplayBusinessLocations(businessLocationList);
                 }
 
                 else if (selection == "8")
@@ -222,19 +227,14 @@ namespace PRG2_Assignment_Team5
 
         static void InitBusinessLocationData(List<BusinessLocation> bList) // reads BusinessLocation csv and creates a BusinessLocation object
         {
-            string[] csvlines = File.ReadAllLines("BusinessLocationcsv");
+            string[] csvlines = File.ReadAllLines("BusinessLocation.csv");
             for (int i = 1; i < csvlines.Length; i++) // i start from 1 to remove the header
             {
                 string[] data = csvlines[i].Split(",");
                 string businessName = data[0];
                 string branchCode = data[1];
                 int maxCapacity = Convert.ToInt32(data[2]);
-
-                foreach (BusinessLocation bl in bList)
-                {
-                    bList.Add(new BusinessLocation(businessName, branchCode, (maxCapacity - bl.VisitorsNow)));
-                    break;
-                }
+                bList.Add(new BusinessLocation(businessName, branchCode, maxCapacity));
                
             }
         }
@@ -406,6 +406,17 @@ namespace PRG2_Assignment_Team5
             }
         }
 
+        static void DisplayBusinessLocations(List<BusinessLocation> bList)
+        {
+            Console.WriteLine("{0, -20} {1, 10} {2, 10}", "Business Name", "Branch Code", "Max Capacity");
+
+            foreach (BusinessLocation bl in bList)
+            {
+                Console.WriteLine("{0, -20} {1, 10} {2, 10}", bl.BusinessName, bl.BranchCode, bl.MaximumCapacity);
+            }
+
+        }
+
         // Display Menu - to add
         static void DisplayMenu()
         {
@@ -413,6 +424,7 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[1]\tView Visitors");
             Console.WriteLine("[2]\tSearch Person");
             Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
+            Console.WriteLine("[4]\tView Business Locations");
             Console.WriteLine("[8]\tList SHN Facilities");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("---------------------------");
