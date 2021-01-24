@@ -108,7 +108,14 @@ namespace PRG2_Assignment_Team5
                 {
                     EditBusinessLocationCapacity(businessLocationList);
                 }
-
+                else if (selection == "6")
+                {
+                    SafeEntryCheckIn(personList, businessLocationList);
+                }
+                else if (selection == "7")
+                {
+                    //do safe entry checkout here
+                }
                 else if (selection == "8")
                 {
                     DisplaySHNFacilities(shnFacilities);
@@ -240,6 +247,7 @@ namespace PRG2_Assignment_Team5
                 int maxCapacity = Convert.ToInt32(data[2]);
                 BusinessLocation bl = new BusinessLocation(businessName, branchCode, maxCapacity);
                 bl.MaximumCapacity = maxCapacity;
+                bl.VisitorsNow = 0;
                 bList.Add(bl);
             }
         }
@@ -328,16 +336,16 @@ namespace PRG2_Assignment_Team5
             if (p.SafeEntryList.Count > 0)
             {
                 Console.WriteLine("\n-------------------------------------- Safe Entry Details --------------------------------------");
-                Console.WriteLine("{0, -15} {1, -15} {2, -25}", "Arrived From", "Entry Mode", "Entry Date");
+                Console.WriteLine("{0, -25} {1, -25} {2, -25}", "Checked in at", "Checked out at", "Business Location");
 
                 foreach (SafeEntry se in p.SafeEntryList)
                 {
-                    string checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
+                    string checkOutTime = "Not checked out";
                     if (se.CheckOut == null)
                     {
-                        checkOutTime = "Not checked out";
+                        checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
                     }
-                    Console.WriteLine("{0, -15} {1, -15} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
+                    Console.WriteLine("{0, -25} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
                 }
             }
             else
@@ -413,11 +421,11 @@ namespace PRG2_Assignment_Team5
 
         static void DisplayBusinessLocations(List<BusinessLocation> bList)
         {
-            Console.WriteLine("{0, -20} {1, 15} {2, 15}", "Business Name", "Branch Code", "Max Capacity");
+            Console.WriteLine("{0, -20} {1, 15} {2, 15} {3, 15}", "Business Name", "Branch Code", "Visitors Now", "Max Capacity");
 
             foreach (BusinessLocation bl in bList)
             {
-                Console.WriteLine("{0, -20} {1, 15} {2, 15}", bl.BusinessName, bl.BranchCode, bl.MaximumCapacity);
+                Console.WriteLine("{0, -20} {1, 15} {2, 15} {3, 15}", bl.BusinessName, bl.BranchCode, bl.VisitorsNow, bl.MaximumCapacity);
             }
 
         }
@@ -463,6 +471,42 @@ namespace PRG2_Assignment_Team5
 
         }
 
+        static void SafeEntryCheckIn(List<Person> pList, List<BusinessLocation> bList)
+        {
+            Console.Write("Enter name of person: ");
+            string name = Console.ReadLine();
+            Person p = SearchPerson(pList, name);
+
+            if (p != null)
+            {
+                DisplayBusinessLocations(bList);
+                Console.Write("\nEnter name of business location to check in: ");
+                string businessLocation = Console.ReadLine();
+
+                foreach (BusinessLocation bl in bList)
+                {
+                    if (bl.BusinessName.ToLower() == businessLocation.ToLower()) // have yet to validate this portion, where a user enter not a correct business location name
+                    {
+                        if (bl.IsFull() == true)
+                        {
+                            Console.WriteLine("\nUnable to check in, {0} is currently full.", bl.BusinessName);
+                        }
+                        else
+                        {
+                            SafeEntry se = new SafeEntry(DateTime.Now, bl);
+                            bl.VisitorsNow += 1;
+                            p.AddSafeEntry(se);
+                            Console.WriteLine("{0} has successfully checked in to {1} !", p.Name, bl.BusinessName);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Sorry, {0} could not be found.\n", name);
+            }
+        }
+
         // Display Menu - to add
         static void DisplayMenu()
         {
@@ -472,6 +516,8 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
             Console.WriteLine("[4]\tView Business Locations");
             Console.WriteLine("[5]\tEdit Business Location Capacity");
+            Console.WriteLine("[6]\tSafe Entry Check In");
+            Console.WriteLine("[7]\tSafe Entry Check Out");
             Console.WriteLine("[8]\tList SHN Facilities");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("---------------------------");
