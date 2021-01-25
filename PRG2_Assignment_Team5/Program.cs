@@ -89,6 +89,7 @@ namespace PRG2_Assignment_Team5
                 else if (selection == "7")
                 {
                     //do safe entry checkout here
+                    SafeEntryCheckOut(personList);
                 }
                 else if (selection == "8")
                 {
@@ -337,6 +338,10 @@ namespace PRG2_Assignment_Team5
                 {
                     string checkOutTime = "Not checked out";
                     if (se.CheckOut == null)
+                    {
+                        checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
+                    }
+                    else
                     {
                         checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
                     }
@@ -621,6 +626,45 @@ namespace PRG2_Assignment_Team5
             else
             {
                 Console.WriteLine("Sorry, {0} could not be found.\n", name);
+            }
+        }
+        static void SafeEntryCheckOut(List<Person> pList)
+        {
+            Console.Write("Enter name of person: ");
+            string name = Console.ReadLine();
+            Person p = SearchPerson(pList, name);
+
+            if (p != null && p.SafeEntryList.Count != 0)
+            {
+                Console.WriteLine("{0, -25} {1, -35}", "Location", "Checked in on");
+                foreach (SafeEntry se in p.SafeEntryList)
+                {
+                    Console.WriteLine("{0, -25} {1, -35}", se.Location.BusinessName, se.CheckIn);
+                }
+                Console.Write("Enter name of business location to check out: ");
+                string businessName = Console.ReadLine();
+
+                foreach (SafeEntry se in p.SafeEntryList)
+                {
+                    if (se.Location.BusinessName.ToLower() == businessName.ToLower())
+                    {
+                        se.PerformCheckOut();
+                        Console.WriteLine("\n{0} has sucessfully checked out from {1} ! ", p.Name, se.Location.BusinessName);
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n{0} is not found in {1}'s Safe Entry list ! ", businessName, p.Name);                    
+                    }
+                    break;
+                }
+            }
+            else if (p != null && p.SafeEntryList.Count == 0)
+            {
+                Console.WriteLine("{0} does not have a Safe Entry check in record !", p.Name);
+            }
+            else
+            {
+                Console.WriteLine("{0} does not exist.", name);
             }
         }
 
