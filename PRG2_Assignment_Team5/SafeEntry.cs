@@ -31,6 +31,7 @@ namespace PRG2_Assignment_Team5
         public void PerformCheckOut()
         {
             CheckOut = DateTime.Now;
+            Location.VisitorsNow -= 1;
         }
 
         public override string ToString()
