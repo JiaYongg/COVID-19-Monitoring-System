@@ -385,16 +385,18 @@ namespace PRG2_Assignment_Team5
 
                 foreach (SafeEntry se in p.SafeEntryList)
                 {
-                    string checkOutTime = "Not checked out";
-                    if (se.CheckOut == null)
+                    
+                    if (se.CheckOut == DateTime.MinValue)
                     {
-                        checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
+                        string checkOutTime = "Not checked out";
+                        Console.WriteLine("{0, -25} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
                     }
                     else
                     {
-                        checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
+                        string checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
+                        Console.WriteLine("{0, -25} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
                     }
-                    Console.WriteLine("{0, -25} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
+                    
                 }
             }
             else
@@ -653,11 +655,11 @@ namespace PRG2_Assignment_Team5
                 DisplayBusinessLocations(bList);
                 Console.Write("\nEnter name of business location to check in: ");
                 string businessLocation = Console.ReadLine();
-
                 foreach (BusinessLocation bl in bList)
                 {
                     if (bl.BusinessName.ToLower() == businessLocation.ToLower()) // have yet to validate this portion, where a user enter not a correct business location name
                     {
+                        
                         if (bl.IsFull() == true)
                         {
                             Console.WriteLine("\nUnable to check in, {0} is currently full.", bl.BusinessName);
@@ -665,9 +667,16 @@ namespace PRG2_Assignment_Team5
                         else
                         {
                             SafeEntry se = new SafeEntry(DateTime.Now, bl);
-                            bl.VisitorsNow += 1;
-                            p.AddSafeEntry(se);
-                            Console.WriteLine("{0} has successfully checked in to {1} !", p.Name, bl.BusinessName);
+                            if (p.SafeEntryList.Contains(se))
+                            {
+                                Console.WriteLine("Alrdy checked in.");
+                            }
+                            else
+                            {
+                                bl.VisitorsNow += 1;
+                                p.AddSafeEntry(se);
+                                Console.WriteLine("{0} has successfully checked in to {1} !\n", p.Name, bl.BusinessName);
+                            }
                         }
                     }
                 }
