@@ -789,8 +789,5 @@ namespace PRG2_Assignment_Team5
                 Console.WriteLine("{0} does not exist.", name);
             }
         }
-
-
-
     }
 }
