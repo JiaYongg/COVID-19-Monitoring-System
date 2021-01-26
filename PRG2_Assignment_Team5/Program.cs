@@ -732,7 +732,6 @@ namespace PRG2_Assignment_Team5
                             }
                             if (!checkedIn)
                             {
-                                tempBiz = bl; // set the placeholder to something else so it will not pass the null check in the else clause
                                 SafeEntry se = new SafeEntry(DateTime.Now, bl);
                                 bl.VisitorsNow += 1;
                                 p.AddSafeEntry(se);
