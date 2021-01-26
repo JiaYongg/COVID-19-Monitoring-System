@@ -451,6 +451,7 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("Token successfully assigned to {0}.\n", r.Name);
             Console.WriteLine("{0}: {1}", "Serial Number", r.token.SerialNo);
             Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+            Console.WriteLine();
         }
 
         static void ReplaceTraceTogetherToken(Resident r)
@@ -466,6 +467,7 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("\nToken has successfully been replaced for {0}.", r.Name);
             Console.WriteLine("{0}: {1}", "New Serial Number", r.token.SerialNo);
             Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+            Console.WriteLine();
         }
 
         static void DisplaySHNFacilities(List<SHNFacility> facilityList)
@@ -521,16 +523,16 @@ namespace PRG2_Assignment_Team5
 
                 if (businessLocation != null)
                 {
-                    Console.WriteLine("Business Location found with a Max Capacity of {0} !", businessLocation.MaximumCapacity);
-                    Console.Write("Enter the number of Max Capacity you would like to change it to: ");
+                    Console.WriteLine("Business Location {0} has a max capacity of {1}!", businessLocation.BusinessName, businessLocation.MaximumCapacity);
+                    Console.Write("Enter the number you would like to change the max capacity to: ");
                     int maxCap = Convert.ToInt32(Console.ReadLine());
 
                     businessLocation.MaximumCapacity = maxCap;
-                    Console.WriteLine("Maximum Capacity of {0} has been updated !", businessLocation.BusinessName);
+                    Console.WriteLine("Maximum Capacity of {0} has been updated to {1}!\n", businessLocation.BusinessName, businessLocation.MaximumCapacity);
                 }
                 else
                 {
-                    Console.WriteLine("Sorry, branch code of {0} is not found !", bizcode);
+                    Console.WriteLine("Sorry, branch code of {0} is not found!\n", bizcode);
                 }
             }
             catch (FormatException ex)
@@ -597,7 +599,6 @@ namespace PRG2_Assignment_Team5
                     }
                 }
             }
-
             if (found)
             {
                 Console.WriteLine("\nCreation of Visitor Failed. There is an existing visitor with the passport number: {0}", newVisitorPpn);
@@ -710,7 +711,7 @@ namespace PRG2_Assignment_Team5
 
                 foreach (BusinessLocation bl in bList)
                 {
-                    if (bl.BusinessName.ToLower() == businessLocation.ToLower()) // have yet to validate this portion, where a user enter not a correct business location name
+                    if (bl.BusinessName.ToLower() == businessLocation.ToLower())
                     {
                         valid = true;
                         if (bl.IsFull() == true)
@@ -731,6 +732,7 @@ namespace PRG2_Assignment_Team5
                             }
                             if (!checkedIn)
                             {
+                                tempBiz = bl; // set the placeholder to something else so it will not pass the null check in the else clause
                                 SafeEntry se = new SafeEntry(DateTime.Now, bl);
                                 bl.VisitorsNow += 1;
                                 p.AddSafeEntry(se);
@@ -771,11 +773,11 @@ namespace PRG2_Assignment_Team5
                     if (se.Location.BusinessName.ToLower() == businessName.ToLower())
                     {
                         se.PerformCheckOut();
-                        Console.WriteLine("\n{0} has sucessfully checked out from {1} ! ", p.Name, se.Location.BusinessName);
+                        Console.WriteLine("\n{0} has sucessfully checked out from {1}!", p.Name, se.Location.BusinessName);
                     }
                     else
                     {
-                        Console.WriteLine("\n{0} is not found in {1}'s Safe Entry list ! ", businessName, p.Name);                    
+                        Console.WriteLine("\n{0} is not found in {1}'s Safe Entry list!", businessName, p.Name);                    
                     }
                     break;
                 }
