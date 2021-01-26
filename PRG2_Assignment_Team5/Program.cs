@@ -655,24 +655,34 @@ namespace PRG2_Assignment_Team5
                 DisplayBusinessLocations(bList);
                 Console.Write("\nEnter name of business location to check in: ");
                 string businessLocation = Console.ReadLine();
+                
                 foreach (BusinessLocation bl in bList)
                 {
                     if (bl.BusinessName.ToLower() == businessLocation.ToLower()) // have yet to validate this portion, where a user enter not a correct business location name
                     {
-                        
                         if (bl.IsFull() == true)
                         {
                             Console.WriteLine("\nUnable to check in, {0} is currently full.", bl.BusinessName);
                         }
                         else
                         {
-                            SafeEntry se = new SafeEntry(DateTime.Now, bl);
-                            if (p.SafeEntryList.Contains(se))
+                            bool checkedIn = false;
+                            foreach (SafeEntry seRecord in p.SafeEntryList)
                             {
-                                Console.WriteLine("Alrdy checked in.");
+                                if (seRecord.Location.BusinessName.ToLower() == businessLocation.ToLower() && seRecord.CheckOut == DateTime.MinValue)
+                                {
+                                    Console.WriteLine("Already checked in to {0}. Please perform a checkout for {1} first.", businessLocation, p.Name);
+                                    checkedIn = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Something happened.");
+                                }
                             }
-                            else
+                            if (!checkedIn)
                             {
+                                SafeEntry se = new SafeEntry(DateTime.Now, bl);
                                 bl.VisitorsNow += 1;
                                 p.AddSafeEntry(se);
                                 Console.WriteLine("{0} has successfully checked in to {1} !\n", p.Name, bl.BusinessName);
