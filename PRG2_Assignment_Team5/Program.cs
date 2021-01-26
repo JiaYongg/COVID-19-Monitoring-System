@@ -71,12 +71,12 @@ namespace PRG2_Assignment_Team5
                         }
                         else
                         {
-                            Console.WriteLine("{0} already owns a TraceTogether Token !", r.Name);
+                            Console.WriteLine("{0} already owns a TraceTogether Token!\n", r.Name);
                         }
                     }
                     else if (person != null && person is Visitor)
                     {
-                        Console.WriteLine("{0} is a visitor and cannot be assigned with a token.", person.Name);
+                        Console.WriteLine("{0} is a visitor and cannot be assigned with a token.\n", person.Name);
                     }
                     else
                     {
@@ -426,30 +426,32 @@ namespace PRG2_Assignment_Team5
 
         static void AssignTraceTogetherToken(Resident r)
         {
-            Console.WriteLine("\nToken not found ! Follow steps below to assign a TraceTogether Token");
+            Console.WriteLine("\n{0} is eligible to apply for the TraceTogether Token! Follow the steps below to apply for a token.", r.Name);
             Console.Write("Enter serial number: ");
             string sn = Console.ReadLine();
             Console.Write("Enter collection location: ");
             string colLocation = Console.ReadLine();
             DateTime expiry = DateTime.Now.AddMonths(6);
             r.token = new TraceTogetherToken(sn, colLocation, expiry);
-            Console.WriteLine("Token successfully assigned to {0}!", r.Name);
+            Console.WriteLine("\nToken successfully assigned to {0}!", r.Name);
             Console.WriteLine("{0}: {1}", "Serial Number", r.token.SerialNo);
             Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+            Console.WriteLine();
         }
 
         static void ReplaceTraceTogetherToken(Resident r)
         {
-            Console.WriteLine("\nToken found but has expired !");
+            Console.WriteLine("\nToken found for {0} but has expired!", r.Name);
             Console.Write("Enter new serial number: ");
             string sn = Console.ReadLine();
             Console.Write("Enter collection location: ");
             string colLocation = Console.ReadLine();
             r.token.ReplaceToken(sn, colLocation);
             r.token.ExpiryDate = DateTime.Now.AddMonths(6);
-            Console.WriteLine("\nToken has been successfully replaced for {0} !", r.Name);
+            Console.WriteLine("\nToken has been successfully replaced for {0}!", r.Name);
             Console.WriteLine("{0}: {1}", "New Serial Number", r.token.SerialNo);
             Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+            Console.WriteLine();
         }
 
         static void DisplaySHNFacilities(List<SHNFacility> facilityList)
@@ -504,16 +506,16 @@ namespace PRG2_Assignment_Team5
 
                 if (businessLocation != null)
                 {
-                    Console.WriteLine("Business Location found with a Max Capacity of {0} !", businessLocation.MaximumCapacity);
-                    Console.Write("Enter the number of Max Capacity you would like to change it to: ");
+                    Console.WriteLine("Business Location {0} has a max capacity of {1}!", businessLocation.BusinessName, businessLocation.MaximumCapacity);
+                    Console.Write("Enter the number you would like to change the max capacity to: ");
                     int maxCap = Convert.ToInt32(Console.ReadLine());
 
                     businessLocation.MaximumCapacity = maxCap;
-                    Console.WriteLine("Maximum Capacity of {0} has been updated !", businessLocation.BusinessName);
+                    Console.WriteLine("Maximum Capacity of {0} has been updated to {1}!\n", businessLocation.BusinessName, businessLocation.MaximumCapacity);
                 }
                 else
                 {
-                    Console.WriteLine("Sorry, branch code of {0} is not found !", bizcode);
+                    Console.WriteLine("Sorry, branch code of {0} is not found!\n", bizcode);
                 }
             }
             catch (FormatException ex)
@@ -578,7 +580,6 @@ namespace PRG2_Assignment_Team5
                     }
                 }
             }
-
             if (found)
             {
                 Console.WriteLine("Visitor {0} with the passport number {1} already exist.", newVisitorPpn, newVisitorPpn);
@@ -606,41 +607,44 @@ namespace PRG2_Assignment_Team5
             //Console.Write("Mode of Entry (Air/Land/Sea): ");
             //entryMode = Console.ReadLine().ToLower();
 
-            //if (entryMode != "air" || entryMode != "land" || entryMode != "sea")
-            //{
-            //    Console.WriteLine("Entry mode must be either by 'Air', 'Land' or 'Sea'");
-            //}
-            //}
-
-                Console.Write("Date of Entry (YYYY/MM/dd HH:mm): ");
-            DateTime entryDate = Convert.ToDateTime(Console.ReadLine());
-
-            TravelEntry te = new TravelEntry(lcoe.ToLower(), entryMode, entryDate);
-            te.CalculateSHNDuration();
-
-            if (te.ShnEndDate.Subtract(te.EntryDate).Days == 14) 
+            if (entryMode.ToLower() != "air" || entryMode != "land" || entryMode != "sea")
             {
-                DisplaySHNFacilities(shnLists);
-                try
+                Console.WriteLine("Entry mode must be either by 'Air', 'Land' or 'Sea'");
+            }
+            else
+            {
+                Console.Write("Date of Entry (YYYY/MM/dd HH:mm): ");
+                DateTime entryDate = Convert.ToDateTime(Console.ReadLine());
+
+                TravelEntry te = new TravelEntry(lcoe.ToLower(), entryMode, entryDate);
+                te.CalculateSHNDuration();
+
+                if (te.ShnEndDate.Subtract(te.EntryDate).Days == 14)
                 {
-                    Console.Write("Enter Facility ID to assign {0}: ", p.Name);
-                    int facilityIndex = Convert.ToInt32(Console.ReadLine()) - 1;
-                    SHNFacility chosenFac = shnLists[facilityIndex];
-                    te.AssignSHNFacility(chosenFac);
+                    DisplaySHNFacilities(shnLists);
+                    try
+                    {
+                        Console.Write("Enter Facility ID to assign {0}: ", p.Name);
+                        int facilityIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+                        SHNFacility chosenFac = shnLists[facilityIndex];
+                        te.AssignSHNFacility(chosenFac);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("Facility ID inputted does not exist!");
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("Please input the respective ID of the chosen facility in integer");
+                    }
                 }
-                catch(IndexOutOfRangeException)
-                {
-                    Console.WriteLine("Facility ID inputted does not exist!");
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Please input the respective ID of the chosen facility in integer");
-                }
+
+                te.IsPaid = false;
+                p.AddTravelEntry(te);
+                Console.WriteLine("Travel Entry record for {0} has been created.", p.Name);
             }
 
-            te.IsPaid = false;
-            p.AddTravelEntry(te);
-            Console.WriteLine("Travel Entry record for {0} has been created.", p.Name);
+            
 
         }
 
@@ -655,10 +659,11 @@ namespace PRG2_Assignment_Team5
                 DisplayBusinessLocations(bList);
                 Console.Write("\nEnter name of business location to check in: ");
                 string businessLocation = Console.ReadLine();
-                
+
+                BusinessLocation tempBiz = null; // for validation to check whether the user has entered a correct business location name, a placeholder essentially.
                 foreach (BusinessLocation bl in bList)
                 {
-                    if (bl.BusinessName.ToLower() == businessLocation.ToLower()) // have yet to validate this portion, where a user enter not a correct business location name
+                    if (bl.BusinessName.ToLower() == businessLocation.ToLower())
                     {
                         if (bl.IsFull() == true)
                         {
@@ -675,20 +680,21 @@ namespace PRG2_Assignment_Team5
                                     checkedIn = true;
                                     break;
                                 }
-                                else
-                                {
-                                    Console.WriteLine("Something happened.");
-                                }
                             }
                             if (!checkedIn)
                             {
+                                tempBiz = bl; // set the placeholder to something else so it will not pass the null check in the else clause
                                 SafeEntry se = new SafeEntry(DateTime.Now, bl);
                                 bl.VisitorsNow += 1;
                                 p.AddSafeEntry(se);
-                                Console.WriteLine("{0} has successfully checked in to {1} !\n", p.Name, bl.BusinessName);
+                                Console.WriteLine("{0} has successfully checked in to {1}!\n", p.Name, bl.BusinessName);
                             }
                         }
                     }
+                }
+                if (tempBiz == null)
+                {
+                    Console.WriteLine("{0} is not found. Please enter the correct business name that is given above.\n", businessLocation);
                 }
             }
             else
@@ -717,26 +723,24 @@ namespace PRG2_Assignment_Team5
                     if (se.Location.BusinessName.ToLower() == businessName.ToLower())
                     {
                         se.PerformCheckOut();
-                        Console.WriteLine("\n{0} has sucessfully checked out from {1} ! ", p.Name, se.Location.BusinessName);
+                        Console.WriteLine("\n{0} has sucessfully checked out from {1}!", p.Name, se.Location.BusinessName);
                     }
                     else
                     {
-                        Console.WriteLine("\n{0} is not found in {1}'s Safe Entry list ! ", businessName, p.Name);                    
+                        Console.WriteLine("\n{0} is not found in {1}'s Safe Entry list!", businessName, p.Name);                    
                     }
                     break;
                 }
             }
             else if (p != null && p.SafeEntryList.Count == 0)
             {
-                Console.WriteLine("{0} does not have a Safe Entry check in record !", p.Name);
+                Console.WriteLine("{0} does not have a Safe Entry check in record!", p.Name);
             }
             else
             {
                 Console.WriteLine("{0} does not exist.", name);
             }
         }
-
-
 
     }
 }
