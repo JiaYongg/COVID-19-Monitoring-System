@@ -45,7 +45,7 @@ namespace PRG2_Assignment_Team5
             {
                 ShnEndDate = EntryDate.AddDays(0);
             }
-            else if (LastCountryOfEmbarkation == "macao sar")
+            else if (LastCountryOfEmbarkation.ToLower() == "macao sar")
             {
                 ShnEndDate = EntryDate.AddDays(7);
             }

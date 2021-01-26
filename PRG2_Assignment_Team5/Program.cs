@@ -30,7 +30,7 @@ namespace PRG2_Assignment_Team5
             // While Loop to loop through menu until user enter exit input.
             while (true)
             {
-                // Call Method 01 - DisplayMenu() to print menu texts/items.
+                // Call DisplayMenu() to print menu texts/items.
                 DisplayMenu();
 
                 // Request for user input on his desired functions.
@@ -38,29 +38,29 @@ namespace PRG2_Assignment_Team5
                 string selection = Console.ReadLine();
 
                 // if, else if and else to handle user inputs for the respective application features or functions.
-                if (selection == "1")
+                if (selection == "1")                                                       // Display All Visitors
                 {
                     // Call ListVistors(personList) method to print and display all visitors.
                     ListVisitors(personList);
                 }
-
-                else if (selection == "2")
+                else if (selection == "2")                                                  // Search particular Person
                 {
                     Console.Write("Enter Name of Person to Search: ");
                     string searchP = Console.ReadLine();
-                    Person query = SearchPerson(personList, searchP);
-                    DisplayQueryDetails(query, searchP);
+                    Person query = SearchPerson(personList, searchP);                       // Call SearchPerson(), returns Person object when found, or null if not found.
+                   
+                    DisplayQueryDetails(query, searchP);                                    // Call DisplayQueryDetails() to parse person object and display details.
                 }
-                else if (selection == "3")
+                else if (selection == "3")                                                  // Assign/Replace TraceTogether Token
                 {
-                    //assign or replace TraceTogetherToken
+                    // !Comments by Jordan - may be able to do validation of person type inside method to make main program cleaner.
                     Console.Write("Enter Name of Person to Search: ");
                     string searchP = Console.ReadLine();
                     Person person = SearchPerson(personList, searchP);
 
-                    if (person != null && person is Resident)
+                    if (person is Resident)
                     {
-                        Resident r = (Resident)person;
+                        Resident r = (Resident) person;
                         if (r.token != null && r.token.IsEligibleForReplacement() == true)
                         {
                             ReplaceTraceTogetherToken(r);
@@ -71,19 +71,22 @@ namespace PRG2_Assignment_Team5
                         }
                         else
                         {
-                            Console.WriteLine("{0} already owns a TraceTogether Token !", r.Name);
+                            Console.WriteLine("\n{0} has already been assigned with a valid TraceTogether Token.", r.Name);
                         }
                     }
-                    else if (person != null && person is Visitor)
+
+                    else if (person is Visitor)
                     {
-                        Console.WriteLine("{0} is a visitor and cannot be assigned with a token.", person.Name);
+                        Console.WriteLine("\n{0} is a visitor and cannot be assigned with a token.\n", person.Name);
                     }
+
                     else
                     {
                         Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
                     }
+                    Console.WriteLine("______________________________________________________________\n");
                 }
-                else if (selection == "4")
+                else if (selection == "4")                                                  // Display the registered Business Locations
                 {
                     DisplayBusinessLocations(businessLocationList);
                 }
@@ -152,11 +155,11 @@ namespace PRG2_Assignment_Team5
             }
         }
 
-        /* START OF METHODS */
+        /* START OF METHODS - General Methods */
         // Display Menu to Print Application Functions for User's Selection
         static void DisplayMenu()
         {
-            Console.WriteLine("-------COVID-19 Monitoring System-------");
+            Console.WriteLine("COVID-19 Monitoring System\n");
             Console.WriteLine("[1]\tView Visitors");
             Console.WriteLine("[2]\tSearch Person");
             Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
@@ -171,12 +174,12 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[12]\tGenerate Contact Tracing Report");
             Console.WriteLine("[13]\tSHN Status Reporting");
             Console.WriteLine("[0]\tExit");
-            Console.WriteLine("-------------End of Menu--------------");
+            Console.WriteLine("______________________________________________________________");
         }
 
         /* INITIALIZATION METHODS */
-        // Initialize 'Person' objects method - InitPersonData(personList, shnList)
-        static void InitPersonData(List<Person> pList, List<SHNFacility> shnList)   // reads Person.csv and creates all existing Person object, can be either visitor or resident
+        // Method 01 InitPersonData(personList, shnList) - Initialize 'Person' objects method from CSV File. Can be either Residents or Visitors.
+        static void InitPersonData(List<Person> pList, List<SHNFacility> shnList)
         {
             string[] csvlines = File.ReadAllLines("Person.csv");
             for (int i = 1; i < csvlines.Length; i++)                               // for loop to loop through csvLines array and i starts from 1 to remove the header.
@@ -205,8 +208,9 @@ namespace PRG2_Assignment_Team5
 
                     // if travel records exist
                     if (data[9] != "")
-                    {                           
-                        rsd.AddTravelEntry(InitTravelEntry(data, shnList));                            // assign TravelEntry object te by calling InitTravelEntry() method and add to Resident's TravelEntryList. 
+                    {
+                        // assign TravelEntry object te by calling InitTravelEntry() method and add to Resident's TravelEntryList. 
+                        rsd.AddTravelEntry(InitTravelEntry(data, shnList));     
                     }
 
                     // if resident has TraceTogetherToken              
@@ -215,17 +219,22 @@ namespace PRG2_Assignment_Team5
                         string tokenSn = data[6];
                         string tokenColLocation = data[7];
                         DateTime tokenExpiryDate = Convert.ToDateTime(data[8]);
+
+                        // Create New TraceTogetherToken object and assign to the TraceTogetherToken property in Resident object.
                         rsd.token = new TraceTogetherToken(tokenSn, tokenColLocation, tokenExpiryDate);
                     }
                 }
-                else
+                else                                                                // if person object is Visitor
                 {
                     // visitors data - only visitor require the following
                     string passportNo = data[4];
                     string nationality = data[5];
-
+                       
+                    // Create new Visitor object
                     Visitor vst = new Visitor(name, passportNo, nationality);
                     pList.Add(vst);
+
+                    // if travel records exist
                     if (data[9] != "")
                     {
                         vst.AddTravelEntry(InitTravelEntry(data, shnList));
@@ -233,15 +242,18 @@ namespace PRG2_Assignment_Team5
                 }
             }
         }
+        // ------- End of InitPersonData() method.
 
+        // Initialize 'TravelEntry' objects method - InitPersonData(string[] data, List<SHNFacility> shnList)
         static TravelEntry InitTravelEntry(string[] data, List<SHNFacility> shnList)
         {
-
-            // for travel entry class
+            // Data required to be parsed to construct TravelEntry object
             string travelEntryLastCountry = data[9];
             string travelEntryMode = data[10];
             string facilityName = data[14];
+            bool travelIsPaid = Convert.ToBoolean(data[13]);
 
+            // Retrieve respective Entry date portions by splitting with "/", " " and ":" for time.
             string[] entryDate = data[11].Split('/', ' ', ':');
             int entYear = Convert.ToInt32(entryDate[2]);
             int entMonth = Convert.ToInt32(entryDate[1]);
@@ -250,21 +262,22 @@ namespace PRG2_Assignment_Team5
             int entMin = Convert.ToInt32(entryDate[4]);
             DateTime travelEntryDate = new DateTime(entYear, entMonth, entDay, entHour, entMin, 0);
 
+            // Retrieve respective Exit date portions by splitting with "/", " " and ":" for time.
             string[] exitDate = data[12].Split('/', ' ', ':');
             int exitYear = Convert.ToInt32(exitDate[2]);
             int exitMonth = Convert.ToInt32(exitDate[1]);
             int exitDay = Convert.ToInt32(exitDate[0]);
             int exitHour = Convert.ToInt32(exitDate[3]);
             int exitMin = Convert.ToInt32(exitDate[4]);
-
             DateTime travelShnEndDate = new DateTime(exitYear, exitMonth, exitDay, exitHour, exitMin, 0);
 
-            string travelIsPaid = data[13];
+            // Create new TravelEntry Object
             TravelEntry personTravelEntry = new TravelEntry(travelEntryLastCountry, travelEntryMode, travelEntryDate);
-            personTravelEntry.EntryDate = travelEntryDate;
-            personTravelEntry.ShnEndDate = travelShnEndDate;
-            personTravelEntry.IsPaid = Convert.ToBoolean(travelIsPaid);
 
+            //personTravelEntry.EntryDate = travelEntryDate;
+            personTravelEntry.ShnEndDate = travelShnEndDate;
+            personTravelEntry.IsPaid = travelIsPaid;
+            
             // if resident stayed in a shnFacility
             if (facilityName != "")
             {
@@ -324,7 +337,8 @@ namespace PRG2_Assignment_Team5
 
         static void ListVisitors(List<Person> pList)
         {
-            Console.WriteLine("\n{0, -10} {1, -15} {2, -15}", "Name", "Passport No.", "Nationality");
+            Console.WriteLine("\nAll Visitors\n");
+            Console.WriteLine("{0, -10} {1, -15} {2, -15}", "Name", "Passport No.", "Nationality");
             foreach (Person p in pList)
             {
                 if (p is Visitor)
@@ -333,7 +347,7 @@ namespace PRG2_Assignment_Team5
                     Console.WriteLine("{0, -10} {1, -15} {2, -15}", p.Name, v.PassportNo, v.Nationality);
                 }
             }
-            Console.WriteLine("\n");
+            Console.WriteLine("______________________________________________________________\n");
         }
 
         static Person SearchPerson(List<Person> pList, string name)
@@ -352,7 +366,7 @@ namespace PRG2_Assignment_Team5
         {
             if (p.TravelEntryList.Count > 0)
             {
-                Console.WriteLine("\n--------------------------------------------------- Travel Entry Details ---------------------------------------------------");
+                Console.WriteLine("\nTravel Entry Details\n");
                 Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -25} {4, -25} {5, -20}", "Arrived From", "Entry Mode", "Entry Date", "SHN End Date", "SHN Facility Residence", "Payment Status");
 
                 foreach (TravelEntry e in p.TravelEntryList)
@@ -367,7 +381,7 @@ namespace PRG2_Assignment_Team5
                     {
                         paymentStatus = "Paid";
                     }
-                    Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -25} {4, -25} {5, -20}\n", e.LastCountryOfEmbarkation, e.EntryMode, e.EntryDate, e.ShnEndDate, facName, paymentStatus);
+                    Console.WriteLine("{0, -15} {1, -15} {2, -25} {3, -25} {4, -25} {5, -20}\n", e.LastCountryOfEmbarkation, e.EntryMode, e.EntryDate.ToString("dd/MM/yyyy HH:mm"), e.ShnEndDate.ToString("dd/MM/yyyy HH:mm"), facName, paymentStatus);
                 }
             }
             else
@@ -380,8 +394,8 @@ namespace PRG2_Assignment_Team5
         {
             if (p.SafeEntryList.Count > 0)
             {
-                Console.WriteLine("\n-------------------------------------- Safe Entry Details --------------------------------------");
-                Console.WriteLine("{0, -25} {1, -25} {2, -25}", "Checked in at", "Checked out at", "Business Location");
+                Console.WriteLine("Safe Entry Details\n");
+                Console.WriteLine("{0, -30} {1, -25} {2, -25}", "Checked in at", "Checked out at", "Business Location");
 
                 foreach (SafeEntry se in p.SafeEntryList)
                 {
@@ -389,19 +403,19 @@ namespace PRG2_Assignment_Team5
                     if (se.CheckOut == DateTime.MinValue)
                     {
                         string checkOutTime = "Not checked out";
-                        Console.WriteLine("{0, -25} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
+                        Console.WriteLine("{0, -30} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
                     }
                     else
                     {
                         string checkOutTime = se.CheckOut.ToString("dd/MM/yyyy HH:mm:ss");
-                        Console.WriteLine("{0, -25} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
+                        Console.WriteLine("{0, -30} {1, -25} {2, -25}\n", se.CheckIn.ToString("dd/MM/yyyy HH:mm:ss"), checkOutTime, se.Location.BusinessName);
                     }
                     
                 }
             }
             else
             {
-                Console.WriteLine("{0} does not have any Safe Entry records.", p.Name);
+                Console.WriteLine("{0} does not have any Safe Entry records.\n", p.Name);
             }
         }
 
@@ -409,7 +423,7 @@ namespace PRG2_Assignment_Team5
         {
             if(r.token != null)
             {
-                Console.WriteLine("\n--------------------------------------------------- TraceTogether Token Details ----------------------------------------------");
+                Console.WriteLine("TraceTogether Token Details\n");
                 string eligibility = "No";
                 if (r.token.IsEligibleForReplacement())
                 {
@@ -426,40 +440,42 @@ namespace PRG2_Assignment_Team5
 
         static void AssignTraceTogetherToken(Resident r)
         {
-            Console.WriteLine("\nToken not found ! Follow steps below to assign a TraceTogether Token");
-            Console.Write("Enter serial number: ");
+            Console.WriteLine("\nAssignment of TraceTogether Token\n");
+            Console.WriteLine("No existing token is found for {0}. Follow steps below to assign a TraceTogether Token:\n", r.Name);
+            Console.Write("Serial number: ");
             string sn = Console.ReadLine();
-            Console.Write("Enter collection location: ");
+            Console.Write("Collection Location: ");
             string colLocation = Console.ReadLine();
             DateTime expiry = DateTime.Now.AddMonths(6);
             r.token = new TraceTogetherToken(sn, colLocation, expiry);
-            Console.WriteLine("Token successfully assigned to {0}!", r.Name);
+            Console.WriteLine("Token successfully assigned to {0}.\n", r.Name);
             Console.WriteLine("{0}: {1}", "Serial Number", r.token.SerialNo);
             Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
         }
 
         static void ReplaceTraceTogetherToken(Resident r)
         {
-            Console.WriteLine("\nToken found but has expired !");
-            Console.Write("Enter new serial number: ");
+            Console.WriteLine("\nReplacement of TraceTogether Token.\n");
+            Console.WriteLine("An expired token has been found. Eligible for replacement.\n");
+            Console.Write("New Serial Number: ");
             string sn = Console.ReadLine();
-            Console.Write("Enter collection location: ");
+            Console.Write("Collection Location: ");
             string colLocation = Console.ReadLine();
             r.token.ReplaceToken(sn, colLocation);
             r.token.ExpiryDate = DateTime.Now.AddMonths(6);
-            Console.WriteLine("\nToken has been successfully replaced for {0} !", r.Name);
+            Console.WriteLine("\nToken has successfully been replaced for {0}.", r.Name);
             Console.WriteLine("{0}: {1}", "New Serial Number", r.token.SerialNo);
             Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
         }
 
         static void DisplaySHNFacilities(List<SHNFacility> facilityList)
         {
+            Console.WriteLine("\nOfficial SHN Facilities\n");
+
             // Header for SHN Facilities
-            Console.WriteLine("{0, -5} {1, -5} {2, 10} {3, 10} {4, 20} {5, 20} {6, 20} {7, 15}", "Facility ID", "Facility Name", "Capacity", "Vacancy", "Distance from Air", "Distance from Sea", "Distance from Land", "Availability");
+            Console.WriteLine("{0, -5} {1, -20} {2, 10} {3, 10} {4, 20} {5, 20} {6, 20} {7, 15}", "ID", "Facility Name", "Capacity", "Vacancy", "Distance from Air", "Distance from Sea", "Distance from Land", "Availability");
 
-            // foreach loop to loop through the facilityList
-
-            for (int i = 0; i < facilityList.Count; i++)
+            for (int i = 0; i < facilityList.Count; i++)                                                   // foreach loop to loop through the facilityList
             {
                 string displayAvail = "No";
                 bool available = facilityList[i].IsAvailable();
@@ -467,19 +483,20 @@ namespace PRG2_Assignment_Team5
                 {
                     displayAvail = "Yes";
                 }
-                Console.WriteLine("[{0, -5}] {1, -20} {2, 10} {3, 10} {4, 20} {5, 20} {6, 20} {7, 15}", i+1, facilityList[i].FacilityName, facilityList[i].FacilityCapacity, facilityList[i].FacilityVacancy, facilityList[i].DistFromAirCheckpoint, facilityList[i].DistFromSeaCheckpoint, facilityList[i].DistFromLandCheckpoint, displayAvail);
+                Console.WriteLine("{0, -5} {1, -20} {2, 10} {3, 10} {4, 20} {5, 20} {6, 20} {7, 15}", i+1, facilityList[i].FacilityName, facilityList[i].FacilityCapacity, facilityList[i].FacilityVacancy, facilityList[i].DistFromAirCheckpoint, facilityList[i].DistFromSeaCheckpoint, facilityList[i].DistFromLandCheckpoint, displayAvail);
             }
+            Console.WriteLine("______________________________________________________________\n");
         }
 
         static void DisplayBusinessLocations(List<BusinessLocation> bList)
         {
+            Console.WriteLine("\nRegistered Business Locations\n");
             Console.WriteLine("{0, -20} {1, 15} {2, 15} {3, 15}", "Business Name", "Branch Code", "Visitors Now", "Max Capacity");
-
             foreach (BusinessLocation bl in bList)
             {
                 Console.WriteLine("{0, -20} {1, 15} {2, 15} {3, 15}", bl.BusinessName, bl.BranchCode, bl.VisitorsNow, bl.MaximumCapacity);
             }
-
+            Console.WriteLine("______________________________________________________________\n");
         }
 
         static BusinessLocation SearchBusinessLocation(List<BusinessLocation> bList, string bizcode)
@@ -498,7 +515,7 @@ namespace PRG2_Assignment_Team5
         {
             try
             {
-                Console.Write("Enter Business branch code: ");
+                Console.Write("Enter Business Branch Code: ");
                 string bizcode = Console.ReadLine();
                 BusinessLocation businessLocation = SearchBusinessLocation(bList, bizcode);
 
@@ -524,12 +541,13 @@ namespace PRG2_Assignment_Team5
 
         static void DisplayQueryDetails(Person query, string searchP)
         {
+            Console.WriteLine("\nSearch Person\n");
             if (query != null)
             {
                 if (query is Resident)
                 {
                     Resident r = (Resident)query;
-                    Console.WriteLine("\n{0, -10} {1, -20} {2, -20}", "Name", "Address", "Last Left Country Date");
+                    Console.WriteLine("{0, -10} {1, -20} {2, -20}", "Name", "Address", "Last Left Country Date");
                     Console.WriteLine("{0, -10} {1, -20} {2, -20}", r.Name, r.Address, r.LastLeftCountry.ToString("dd/MM/yyyy"));
 
                     PrintTravelEntry(r);
@@ -539,7 +557,7 @@ namespace PRG2_Assignment_Team5
                 else
                 {
                     Visitor v = (Visitor) query;
-                    Console.WriteLine("\n{0, -10} {1, -10} {2, -25}", "Name", "Passport No.", "Nationality");
+                    Console.WriteLine("{0, -10} {1, -10} {2, -25}", "Name", "Passport No.", "Nationality");
                     Console.WriteLine("{0, -10} {1, -10} {2, -25}", v.Name, v.PassportNo, v.Nationality);
                     PrintTravelEntry(v);
                     PrintSafeEntry(v);
@@ -547,13 +565,14 @@ namespace PRG2_Assignment_Team5
             }
             else
             {
-                Console.WriteLine("Sorry, {0} could not be found.\n", searchP);
+                Console.WriteLine("Sorry, {0} could not be found.", searchP);
             }
+            Console.WriteLine("______________________________________________________________\n");
         }
 
         static void CreateVisitor(List<Person> pList)
         {
-            Console.WriteLine("------------- Create new visitor -------------");
+            Console.WriteLine("\nAdd New Visitor\n");
             Console.Write("Visitor Name: ");
             string newVisitorName = Console.ReadLine();
             Console.Write("Visitor Passport No.: ");
@@ -581,71 +600,103 @@ namespace PRG2_Assignment_Team5
 
             if (found)
             {
-                Console.WriteLine("Visitor {0} with the passport number {1} already exist.", newVisitorPpn, newVisitorPpn);
+                Console.WriteLine("\nCreation of Visitor Failed. There is an existing visitor with the passport number: {0}", newVisitorPpn);
+                Console.WriteLine("______________________________________________________________\n");
             }
             else
             {
-                pList.Add(new Visitor(newVisitorName, newVisitorPpn, newVisitorNationality));
-                Console.WriteLine("Visitor {0} created.");
+                Person newV = new Visitor(newVisitorName, newVisitorPpn, newVisitorNationality);
+                pList.Add(newV);
+                Console.WriteLine("\nVisitor {0} has been successfully created.", newV.Name);
                 ListVisitors(pList);
             }
         }
 
         static void CreateTravelEntry(Person p, List<SHNFacility> shnLists)
         {
-            // have to do:
-            // 1. Validation for Entry Mode input (Air/Land/Sea), 
-
             Console.Write("Last Country of Embarkation: ");
             string lcoe = Console.ReadLine();
-            //string entryMode = "";
-            Console.Write("Mode of Entry (Air/Land/Sea): ");
-            string entryMode = Console.ReadLine();
-            //while (entryMode != "air" || entryMode != "land" || entryMode != "sea")
-            //{
-            //Console.Write("Mode of Entry (Air/Land/Sea): ");
-            //entryMode = Console.ReadLine().ToLower();
+            string entryMode;
 
-            //if (entryMode != "air" || entryMode != "land" || entryMode != "sea")
-            //{
-            //    Console.WriteLine("Entry mode must be either by 'Air', 'Land' or 'Sea'");
-            //}
-            //}
-
-                Console.Write("Date of Entry (YYYY/MM/dd HH:mm): ");
-            DateTime entryDate = Convert.ToDateTime(Console.ReadLine());
-
-            TravelEntry te = new TravelEntry(lcoe.ToLower(), entryMode, entryDate);
-            te.CalculateSHNDuration();
-
-            if (te.ShnEndDate.Subtract(te.EntryDate).Days == 14) 
+            while (true) // to ensure that user only enters the domain of entry mode - air, land and sea.
             {
-                DisplaySHNFacilities(shnLists);
-                try
+                Console.Write("Mode of Entry (Air/Land/Sea): ");
+                entryMode = Console.ReadLine();
+
+                if (entryMode.ToLower() == "air" || entryMode.ToLower() == "land" || entryMode.ToLower() == "sea")
                 {
-                    Console.Write("Enter Facility ID to assign {0}: ", p.Name);
-                    int facilityIndex = Convert.ToInt32(Console.ReadLine()) - 1;
-                    SHNFacility chosenFac = shnLists[facilityIndex];
-                    te.AssignSHNFacility(chosenFac);
+                    break;
                 }
-                catch(IndexOutOfRangeException)
+                else
                 {
-                    Console.WriteLine("Facility ID inputted does not exist!");
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Please input the respective ID of the chosen facility in integer");
+                    Console.WriteLine("Entry mode must be either by 'Air', 'Land' or 'Sea'");
                 }
             }
 
-            te.IsPaid = false;
-            p.AddTravelEntry(te);
-            Console.WriteLine("Travel Entry record for {0} has been created.", p.Name);
+            try
+            {
+                Console.Write("Enter Year of Entry: ");
+                int entryYr = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Enter Month of Entry: ");
+                int entryMth = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Enter Day of Entry: ");
+                int entryDay = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Enter Hour of Entry: ");
+                int entryHr = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Enter Minute of Entry: ");
+                int entryMin = Convert.ToInt32(Console.ReadLine());
+                DateTime entryDate = new DateTime(entryYr, entryMth, entryDay, entryHr, entryMin, 0);
+                TravelEntry te = new TravelEntry(lcoe, entryMode, entryDate);
+                te.CalculateSHNDuration();
+                te.IsPaid = false;
+                p.AddTravelEntry(te);
 
+                if (te.ShnEndDate.Subtract(te.EntryDate).Days == 14)
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            DisplaySHNFacilities(shnLists);
+                            Console.Write("Enter Facility ID to assign {0}: ", p.Name);
+                            int facilityIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+                            SHNFacility chosenFac = shnLists[facilityIndex];
+
+                            if (chosenFac.FacilityVacancy <= 0)
+                            {
+                                Console.WriteLine("Facility is full, please select another facility.");
+                            }
+                            else
+                            {
+                                te.AssignSHNFacility(chosenFac);
+                                Console.WriteLine("Travel Entry record for {0} has been created.", p.Name);
+                                break;
+                            }
+                        }
+                        catch (ArgumentOutOfRangeException)
+                        {
+                            Console.WriteLine("Facility ID inputted does not exist!");
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Please input the respective ID of the chosen facility in integer");
+                        }
+                    }
+                }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("Date has not been inputted correctly.");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid date inputs. Please enter the numeric form of all date portions.");
+            }
         }
-
+        
         static void SafeEntryCheckIn(List<Person> pList, List<BusinessLocation> bList)
         {
+            Console.WriteLine("\nSafeEntry Check-In");
             Console.Write("Enter name of person: ");
             string name = Console.ReadLine();
             Person p = SearchPerson(pList, name);
@@ -655,11 +706,13 @@ namespace PRG2_Assignment_Team5
                 DisplayBusinessLocations(bList);
                 Console.Write("\nEnter name of business location to check in: ");
                 string businessLocation = Console.ReadLine();
-                
+                bool valid = false;
+
                 foreach (BusinessLocation bl in bList)
                 {
                     if (bl.BusinessName.ToLower() == businessLocation.ToLower()) // have yet to validate this portion, where a user enter not a correct business location name
                     {
+                        valid = true;
                         if (bl.IsFull() == true)
                         {
                             Console.WriteLine("\nUnable to check in, {0} is currently full.", bl.BusinessName);
@@ -671,13 +724,9 @@ namespace PRG2_Assignment_Team5
                             {
                                 if (seRecord.Location.BusinessName.ToLower() == businessLocation.ToLower() && seRecord.CheckOut == DateTime.MinValue)
                                 {
-                                    Console.WriteLine("Already checked in to {0}. Please perform a checkout for {1} first.", businessLocation, p.Name);
+                                    Console.WriteLine("\n{0} is already checked in to {1}. Please perform a checkout first.", p.Name, businessLocation);
                                     checkedIn = true;
                                     break;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Something happened.");
                                 }
                             }
                             if (!checkedIn)
@@ -685,16 +734,21 @@ namespace PRG2_Assignment_Team5
                                 SafeEntry se = new SafeEntry(DateTime.Now, bl);
                                 bl.VisitorsNow += 1;
                                 p.AddSafeEntry(se);
-                                Console.WriteLine("{0} has successfully checked in to {1} !\n", p.Name, bl.BusinessName);
+                                Console.WriteLine("{0} has successfully been checked in to {1}.", p.Name, bl.BusinessName);
                             }
                         }
                     }
                 }
+                if (!valid)
+                {
+                    Console.WriteLine("{0} is not a business location and could not be found.", businessLocation);
+                }
             }
             else
             {
-                Console.WriteLine("Sorry, {0} could not be found.\n", name);
+                Console.WriteLine("Sorry, {0} could not be found.", name);
             }
+            Console.WriteLine("______________________________________________________________\n");
         }
         static void SafeEntryCheckOut(List<Person> pList)
         {
@@ -728,7 +782,7 @@ namespace PRG2_Assignment_Team5
             }
             else if (p != null && p.SafeEntryList.Count == 0)
             {
-                Console.WriteLine("{0} does not have a Safe Entry check in record !", p.Name);
+                Console.WriteLine("{0} currently does not have a SafeEntry Check-In record.", p.Name);
             }
             else
             {
