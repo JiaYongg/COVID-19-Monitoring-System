@@ -17,21 +17,30 @@ namespace PRG2_Assignment_Team5
     {
         static void Main(string[] args)
         {
+            // Establish List to store respective objects - Person (Residents & Visitors), Business Location and SHN Facilities.
             List<Person> personList = new List<Person>();
             List<BusinessLocation> businessLocationList = new List<BusinessLocation>();
             List<SHNFacility> shnFacilities = new List<SHNFacility>();
+
+            // Initialization of People (Residents & Visitors), Business Locations & SHN Facilities
             shnFacilities = InitSHNFacilityData(shnFacilities);
             InitPersonData(personList, shnFacilities);
             InitBusinessLocationData(businessLocationList);
 
+            // While Loop to loop through menu until user enter exit input.
             while (true)
             {
+                // Call Method 01 - DisplayMenu() to print menu texts/items.
                 DisplayMenu();
+
+                // Request for user input on his desired functions.
                 Console.Write("Enter your selection: ");
                 string selection = Console.ReadLine();
-                
+
+                // if, else if and else to handle user inputs for the respective application features or functions.
                 if (selection == "1")
                 {
+                    // Call ListVistors(personList) method to print and display all visitors.
                     ListVisitors(personList);
                 }
 
@@ -51,7 +60,7 @@ namespace PRG2_Assignment_Team5
 
                     if (person != null && person is Resident)
                     {
-                        Resident r = (Resident) person;
+                        Resident r = (Resident)person;
                         if (r.token != null && r.token.IsEligibleForReplacement() == true)
                         {
                             ReplaceTraceTogetherToken(r);
@@ -88,14 +97,13 @@ namespace PRG2_Assignment_Team5
                 }
                 else if (selection == "7")
                 {
-                    //do safe entry checkout here
                     SafeEntryCheckOut(personList);
                 }
                 else if (selection == "8")
                 {
                     DisplaySHNFacilities(shnFacilities);
                 }
-                
+
                 else if (selection == "9")
                 {
                     CreateVisitor(personList);
@@ -115,36 +123,76 @@ namespace PRG2_Assignment_Team5
                     {
                         Console.WriteLine("{0} does not exist.", searchName);
                     }
-                    
+                }
+                else if (selection == "11")
+                {
+                    // Calculate SHN Charges
+                }
+                else if (selection == "12")
+                {
+                    // Generate Contact Tracing Report
+                }
+                else if (selection == "13")
+                {
+                    // Generate Active SHN Report
+                }
+                else if (selection == "14")
+                {
+                    // Reserved for additional features.
                 }
                 else if (selection == "0")
                 {
                     Console.WriteLine("You have exited the program.");
                     break;
                 }
+                else
+                {
+                    Console.WriteLine("Invalid selection, please enter the respective number on the selected feature.\n");
+                }
             }
         }
 
-        static void InitPersonData(List<Person> pList, List<SHNFacility> shnList)         // reads Person csv and create a Person object, can be either visitor or resident
+        /* START OF METHODS */
+        // Display Menu to Print Application Functions for User's Selection
+        static void DisplayMenu()
+        {
+            Console.WriteLine("-------COVID-19 Monitoring System-------");
+            Console.WriteLine("[1]\tView Visitors");
+            Console.WriteLine("[2]\tSearch Person");
+            Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
+            Console.WriteLine("[4]\tView All Business Locations");
+            Console.WriteLine("[5]\tEdit Business Location Capacity");
+            Console.WriteLine("[6]\tSafeEntry Check-In");
+            Console.WriteLine("[7]\tSafeEntry Check-Out");
+            Console.WriteLine("[8]\tList All SHN Facilities");
+            Console.WriteLine("[9]\tCreate New Visitor");
+            Console.WriteLine("[10]\tCreate New TravelEntry Record");
+            Console.WriteLine("[11]\tCalculate SHN Charges");
+            Console.WriteLine("[12]\tGenerate Contact Tracing Report");
+            Console.WriteLine("[13]\tSHN Status Reporting");
+            Console.WriteLine("[0]\tExit");
+            Console.WriteLine("-------------End of Menu--------------");
+        }
+
+        /* INITIALIZATION METHODS */
+        // Initialize 'Person' objects method - InitPersonData(personList, shnList)
+        static void InitPersonData(List<Person> pList, List<SHNFacility> shnList)   // reads Person.csv and creates all existing Person object, can be either visitor or resident
         {
             string[] csvlines = File.ReadAllLines("Person.csv");
-
-            for (int i = 1; i < csvlines.Length; i++) // i starts from 1 to remove the header
+            for (int i = 1; i < csvlines.Length; i++)                               // for loop to loop through csvLines array and i starts from 1 to remove the header.
             {
-                string[] data = csvlines[i].Split(",");
-
-                // data conversion and preparation
+                string[] data = csvlines[i].Split(",");                             // Split column data by ','.
+                /* data conversion and preparation */
                 string type = data[0];
-
                 // generic data - all people category (residents & visitor) requires the following.
                 string name = data[1];
 
-                if (type == "resident")
+                if (type == "resident")                                             // If, else to check if 'Person' is Resident or Visitor. Require different handling & constructors.
                 {
                     // residents data - only resident require the following
                     string address = data[2];
 
-                    // to retrieve respective date parts
+                    // Retrieve respective date portions by splitting with "/".
                     string[] leftDateArray = data[3].Split('/');
                     int leftYear = Convert.ToInt32(leftDateArray[2]);
                     int leftMonth = Convert.ToInt32(leftDateArray[1]);
@@ -177,7 +225,7 @@ namespace PRG2_Assignment_Team5
                     string nationality = data[5];
 
                     Visitor vst = new Visitor(name, passportNo, nationality);
-                    pList.Add(vst);                                                 // should be no problems
+                    pList.Add(vst);
                     if (data[9] != "")
                     {
                         vst.AddTravelEntry(InitTravelEntry(data, shnList));
@@ -285,6 +333,7 @@ namespace PRG2_Assignment_Team5
                     Console.WriteLine("{0, -10} {1, -15} {2, -15}", p.Name, v.PassportNo, v.Nationality);
                 }
             }
+            Console.WriteLine("\n");
         }
 
         static Person SearchPerson(List<Person> pList, string name)
@@ -561,10 +610,10 @@ namespace PRG2_Assignment_Team5
             //}
             //}
 
-        Console.Write("Date of Entry (YYYY/MM/dd HH:mm): ");
+                Console.Write("Date of Entry (YYYY/MM/dd HH:mm): ");
             DateTime entryDate = Convert.ToDateTime(Console.ReadLine());
 
-            TravelEntry te = new TravelEntry(lcoe, entryMode, entryDate);
+            TravelEntry te = new TravelEntry(lcoe.ToLower(), entryMode, entryDate);
             te.CalculateSHNDuration();
 
             if (te.ShnEndDate.Subtract(te.EntryDate).Days == 14) 
@@ -668,23 +717,7 @@ namespace PRG2_Assignment_Team5
             }
         }
 
-        // Display Menu - to add
-        static void DisplayMenu()
-        {
-            Console.WriteLine("\nCOVID-19 Monitoring System");
-            Console.WriteLine("[1]\tView Visitors");
-            Console.WriteLine("[2]\tSearch Person");
-            Console.WriteLine("[3]\tAssign/Replace TraceTogether Token");
-            Console.WriteLine("[4]\tView Business Locations");
-            Console.WriteLine("[5]\tEdit Business Location Capacity");
-            Console.WriteLine("[6]\tSafe Entry Check In");
-            Console.WriteLine("[7]\tSafe Entry Check Out");
-            Console.WriteLine("[8]\tList SHN Facilities");
-            Console.WriteLine("[9]\tCreate New Visitor");
-            Console.WriteLine("[10]\tCreate Travel Entry Record");
-            Console.WriteLine("[0]\tExit");
-            Console.WriteLine("---------------------------");
-        }
+
 
     }
 }
