@@ -35,7 +35,7 @@ namespace PRG2_Assignment_Team5
             SafeEntryList.Add(safeEntry);
         }
 
-        public abstract double CalculateSHNCharges();
+        public abstract double CalculateSHNCharges(TravelEntry te);
 
         public override string ToString()
         {

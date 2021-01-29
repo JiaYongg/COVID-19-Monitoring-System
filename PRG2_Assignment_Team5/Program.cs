@@ -131,62 +131,19 @@ namespace PRG2_Assignment_Team5
                 {
                     Console.Write("Enter the name of the person to retrieve SHN charges: ");
                     string query = Console.ReadLine();
+                    Console.Write("\n");
 
                     Person p = SearchPerson(personList, query);
 
                     if (p != null)
                     {
-                        double charges = p.CalculateSHNCharges();
-                        if (charges == -1)
-                        {
-                            Console.WriteLine("The bill for {0}'s SHN has already been paid.", p.Name);
-                        }
-                        else
-                        {
-                            try
-                            {
-                                Console.WriteLine("Total Bill: {0}", charges);
-                                Console.Write("Proceed for Payment? (Y/N): ");
-                                string paymentConfirm = Console.ReadLine();
-                                if (paymentConfirm == "Y")
-                                {
-                                    Console.Write("Enter amount to pay: $");
-                                    double paymentAmt = Convert.ToDouble(Console.ReadLine());
-
-                                    if (paymentAmt > charges)
-                                    {
-                                        Console.WriteLine("Payment is too much. Are you donating to the government?");
-                                    }
-                                    else if (paymentAmt == charges)
-                                    {
-                                        Console.WriteLine("Full settlement received. TravelEntry bill is now paid.");
-                                        
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Partial payment received. Remaining amount bill")
-                                    }
-                                }
-                                else if (paymentConfirm == "N")
-                                {
-                                    Console.WriteLine("Payment Cancelled.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Payment cancelled, invalid input. (Y/N) only. Please retry.");
-                                }
-                            }
-                            catch (FormatException)
-                            {
-                                Console.WriteLine("Please enter the amount to pay in numerical format.");
-                            }
-                        }
-                        Console.WriteLine("")
+                        CalculateSHNCharges(p);
                     }
                     else
                     {
                         Console.WriteLine("Unable to retrieve the SHN Charges for {0}. {1} was not found.", query, query);
                     }
+                    Console.WriteLine("______________________________________________________________\n");
                 }
                 else if (selection == "12")
                 {
@@ -845,6 +802,71 @@ namespace PRG2_Assignment_Team5
             else
             {
                 Console.WriteLine("{0} does not exist.", name);
+            }
+        }
+
+        static void CalculateSHNCharges(Person p)
+        {
+            foreach (TravelEntry te in p.TravelEntryList)
+            {
+                if (te.IsPaid)
+                {
+                    Console.WriteLine("SHN Charges for {0} has already been paid.", p.Name);
+                }
+                else if (!te.IsPaid && te.ShnEndDate < DateTime.Now)
+                {
+                    DisplayQueryDetails(p, "");
+                    double charges = p.CalculateSHNCharges(te);
+                    Console.WriteLine("{0} has an unsettled SHN charges of ${1:#0.00}", p.Name, charges);
+                    string paymentConfirmation = "";
+
+                    while (paymentConfirmation.ToUpper() != "Y" || paymentConfirmation.ToUpper() != "N")
+                    {
+                        Console.Write("Proceed to make payment? (Y/N): ");
+                        paymentConfirmation = Console.ReadLine();
+
+                        try
+                        {
+                            if (paymentConfirmation.ToUpper() == "Y")
+                            {
+                                Console.Write("\nEnter amount to pay: $");
+                                double settlementAmt = Convert.ToDouble(Console.ReadLine());
+                                if (settlementAmt == charges)
+                                {
+                                    te.IsPaid = true;
+                                    Console.WriteLine("A complete settlement of ${0} has been received for {1}'s SHN charges", charges, p.Name);
+                                    DisplayQueryDetails(p, "");
+                                    break;
+                                }
+                                else if (settlementAmt > charges)
+                                {
+                                    Console.WriteLine("Payment Failed. Paid amount is more than the bill. Are you trying to make a donation?\n");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Payment Failed. Only full payment is allowed. Please make a payment of ${0:#0.00}\n", charges);
+                                }
+                            }
+                            else if (paymentConfirmation.ToUpper() == "N")
+                            {
+                                Console.WriteLine("\nPayment Cancelled.");
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nInvalid input. Please confirm payment by Y/N.");
+                            }
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("\nInvalid amount. Please enter the amount in numerical format.\n");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("SHN for {0} has yet to conclude.", p.Name);
+                }
             }
         }
     }

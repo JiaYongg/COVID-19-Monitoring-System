@@ -19,30 +19,22 @@ namespace PRG2_Assignment_Team5
             Nationality = nlty;
         }
 
-        public override double CalculateSHNCharges()
+        public override double CalculateSHNCharges(TravelEntry te)
         {
-            for (int i = 0; i < TravelEntryList.Count; i++)                     // assuming that there can only be 1 unpaid shn bill at any one time
+            if (te.ShnStay != null)                               // SHNFacility object exists in ShnStay
             {
-                if (TravelEntryList[i].IsPaid == false && TravelEntryList[i].ShnEndDate < DateTime.Now)
-                {xwxw
-                    TravelEntry unpaidTe = TravelEntryList[i];
-                    if (unpaidTe.ShnStay != null)                               // SHNFacility object exists in ShnStay
-                    {
-                        double travelCost = unpaidTe.ShnStay.CalculateTravelCost(unpaidTe.EntryMode, unpaidTe.EntryDate);
-                        return (200 + travelCost + 2000) * 1.07;
-                    }
-                    else
-                    {
-                        return (200 + 80) * 1.07;
-                    }
-                }
+                double travelCost = te.ShnStay.CalculateTravelCost(te.EntryMode, te.EntryDate);
+                return (200 + travelCost + 2000) * 1.07;
             }
-            return -1;
+            else
+            {
+                return (200 + 80) * 1.07;
+            }
         }
 
         public override string ToString()
         {
-            return base.ToString() + "\tPassport No:" + PassportNo + "\tNationality: " + Nationality + "SHN Charges: " + CalculateSHNCharges();
+            return base.ToString() + "\tPassport No:" + PassportNo + "\tNationality: " + Nationality;
         }
     }
 }
