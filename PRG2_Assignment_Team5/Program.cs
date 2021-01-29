@@ -129,7 +129,64 @@ namespace PRG2_Assignment_Team5
                 }
                 else if (selection == "11")
                 {
-                    // Calculate SHN Charges
+                    Console.Write("Enter the name of the person to retrieve SHN charges: ");
+                    string query = Console.ReadLine();
+
+                    Person p = SearchPerson(personList, query);
+
+                    if (p != null)
+                    {
+                        double charges = p.CalculateSHNCharges();
+                        if (charges == -1)
+                        {
+                            Console.WriteLine("The bill for {0}'s SHN has already been paid.", p.Name);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Console.WriteLine("Total Bill: {0}", charges);
+                                Console.Write("Proceed for Payment? (Y/N): ");
+                                string paymentConfirm = Console.ReadLine();
+                                if (paymentConfirm == "Y")
+                                {
+                                    Console.Write("Enter amount to pay: $");
+                                    double paymentAmt = Convert.ToDouble(Console.ReadLine());
+
+                                    if (paymentAmt > charges)
+                                    {
+                                        Console.WriteLine("Payment is too much. Are you donating to the government?");
+                                    }
+                                    else if (paymentAmt == charges)
+                                    {
+                                        Console.WriteLine("Full settlement received. TravelEntry bill is now paid.");
+                                        
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Partial payment received. Remaining amount bill")
+                                    }
+                                }
+                                else if (paymentConfirm == "N")
+                                {
+                                    Console.WriteLine("Payment Cancelled.");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Payment cancelled, invalid input. (Y/N) only. Please retry.");
+                                }
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine("Please enter the amount to pay in numerical format.");
+                            }
+                        }
+                        Console.WriteLine("")
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unable to retrieve the SHN Charges for {0}. {1} was not found.", query, query);
+                    }
                 }
                 else if (selection == "12")
                 {

@@ -24,7 +24,7 @@ namespace PRG2_Assignment_Team5
             for (int i = 0; i < TravelEntryList.Count; i++)                     // assuming that there can only be 1 unpaid shn bill at any one time
             {
                 if (TravelEntryList[i].IsPaid == false && TravelEntryList[i].ShnEndDate < DateTime.Now)
-                {
+                {xwxw
                     TravelEntry unpaidTe = TravelEntryList[i];
                     if (unpaidTe.ShnStay != null)                               // SHNFacility object exists in ShnStay
                     {
