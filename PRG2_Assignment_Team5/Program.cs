@@ -126,7 +126,7 @@ namespace PRG2_Assignment_Team5
                 }
                 else if (selection == "13")
                 {
-                    // Generate Active SHN Report
+                    GenerateCurrentSHN(personList);
                 }
                 else if (selection == "14")
                 {
@@ -161,7 +161,7 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[10]\tCreate New TravelEntry Record");
             Console.WriteLine("[11]\tCalculate SHN Charges");
             Console.WriteLine("[12]\tGenerate Contact Tracing Report");
-            Console.WriteLine("[13]\tSHN Status Reporting");
+            Console.WriteLine("[13]\tGenerate SHN Report");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("______________________________________________________________");
         }
@@ -951,6 +951,62 @@ namespace PRG2_Assignment_Team5
             catch (FormatException)
             {
                 Console.WriteLine("Please follow accordingly and enter the correct input.");
+            }
+        }
+
+        static void GenerateCurrentSHN(List<Person> pList)
+        {
+            Console.WriteLine("Generate SHN Report\n");
+            try
+            {
+                Console.Write("Year of Date to Retrieve SHN Servers' Details: ");
+                int year = Convert.ToInt32(Console.ReadLine());
+
+                Console.Write("Month of Date to Retrieve SHN Servers' Details: ");
+                int mth = Convert.ToInt32(Console.ReadLine());
+
+                Console.Write("Day of Date to Retrieve SHN Servers' Details: ");
+                int day = Convert.ToInt32(Console.ReadLine());
+
+                bool found = false;
+
+                DateTime queryDate = new DateTime(year, mth, day);
+                using (StreamWriter sw = new StreamWriter("SHNReport.csv", false))
+                {
+                    sw.WriteLine("Name" + "," + "Date of Entry" + "," + "Mode of Entry" + "," + "Arrived From" + "," + "Stayed in SHN Facility" + "," + "SHN End Date" + "," + "Payment Received" + "," + "SHN Charges");
+                }
+
+                foreach (Person p in pList)
+                {
+                    foreach (TravelEntry te in p.TravelEntryList)
+                    {
+                        if (te.LastCountryOfEmbarkation != null)
+                        {
+                            if (queryDate >= te.EntryDate && queryDate <= te.ShnEndDate)
+                            {
+                                found = true;
+                                string travelRecord = p.Name + "," + te.EntryDate + "," + te.EntryMode + "," + te.LastCountryOfEmbarkation + "," + te.ShnStay.FacilityName + "," + te.ShnEndDate + "," + te.IsPaid + "," + p.CalculateSHNCharges(te);
+                                using (StreamWriter sw = new StreamWriter("SHNReport.csv", true))
+                                {
+                                    sw.WriteLine(travelRecord);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!found)
+                {
+                    Console.WriteLine("No travellers are serving their SHN during the inputted date. Report was not generated.");
+                }
+                else
+                {
+                    Console.WriteLine("Report has been successfully generated.");
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Date inputted is incorrect. Please input the date portions in numerical format.");
             }
 
 
