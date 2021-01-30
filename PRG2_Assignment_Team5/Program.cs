@@ -148,6 +148,7 @@ namespace PRG2_Assignment_Team5
                 else if (selection == "12")
                 {
                     // Generate Contact Tracing Report
+                    ContactTracingReport(personList);
                 }
                 else if (selection == "13")
                 {
@@ -472,15 +473,16 @@ namespace PRG2_Assignment_Team5
         {
             Console.WriteLine("\nReplacement of TraceTogether Token.\n");
             Console.WriteLine("An expired token has been found. Eligible for replacement.\n");
-            Console.Write("New Serial Number: ");
+            Console.Write("Please enter serial number for your new TraceTogether token: "); //serial number
             string sn = Console.ReadLine();
-            Console.Write("Collection Location: ");
+            Console.WriteLine("Where would you like to collect your token from?");
+            Console.Write("Enter collection location: "); //collection location
             string colLocation = Console.ReadLine();
             r.token.ReplaceToken(sn, colLocation);
             r.token.ExpiryDate = DateTime.Now.AddMonths(6);
             Console.WriteLine("\nToken has successfully been replaced for {0}.", r.Name);
-            Console.WriteLine("{0}: {1}", "New Serial Number", r.token.SerialNo);
-            Console.WriteLine("{0}: {1}", "Collection Location", r.token.CollectionLocation);
+            Console.WriteLine("{0}: {1}", "New TraceTogether token serial number", r.token.SerialNo);
+            Console.WriteLine("{0}: {1}", "Token retrieved from", r.token.CollectionLocation);
             Console.WriteLine();
         }
 
@@ -868,6 +870,94 @@ namespace PRG2_Assignment_Team5
                     Console.WriteLine("SHN for {0} has yet to conclude.", p.Name);
                 }
             }
+        }
+
+        //static void SafeEntryRecord(List<Person> pList)
+        //{
+        //    string header = "Name" + "," + "Location" + "," + "Check in time" + "," + "Check out time";
+        //    List<string> recordList = new List<string>();
+        //    foreach (Person p in pList)
+        //    {
+        //        foreach (SafeEntry se in p.SafeEntryList)
+        //        {
+                    
+        //            if (se.CheckOut == DateTime.MinValue)
+        //            {
+        //                string checkOutTime = "Not checked out";
+        //                string entryRecord = p.Name + "," + se.Location.BusinessName + "," + se.CheckIn + "," + checkOutTime;
+        //                recordList.Add(entryRecord);
+        //            }
+        //            else
+        //            {
+        //                string entryRecord = p.Name + "," + se.Location.BusinessName + "," + se.CheckIn + "," + se.CheckOut;
+        //                recordList.Add(entryRecord);
+        //            }
+        //            using (StreamWriter sw = new StreamWriter("SafeEntryRecord.csv", false))
+        //            {
+        //                sw.WriteLine(header);
+        //                foreach (string record in recordList)
+        //                {
+        //                    sw.WriteLine(record);
+        //                }
+                        
+        //            }
+        //        }
+
+        //    }
+        //}
+
+        static void ContactTracingReport(List<Person> pList)
+        {
+            try
+            {
+                string header = "Name" + "," + "Check in time" + "," + "Check out time";
+                List<string> recordList = new List<string>();
+
+                Console.Write("Enter the Date time(MM/DD/YYYY): ");
+                DateTime date = Convert.ToDateTime(Console.ReadLine());
+                if (date < DateTime.Now)
+                {
+                    Console.Write("Enter Business Name: ");
+                    string bizName = Console.ReadLine();
+                    bool found = false;
+                
+                    foreach (Person p in pList)
+                    {
+                        foreach (SafeEntry se in p.SafeEntryList)
+                        {
+                            if (bizName.ToLower() == se.Location.BusinessName.ToLower())
+                            {
+                                found = true;
+                                string entryRecord = p.Name + "," + se.CheckIn + "," + se.CheckOut;
+                                recordList.Add(entryRecord);
+
+                                using (StreamWriter sw = new StreamWriter("SafeEntryRecord.csv", false))
+                                {
+                                    sw.WriteLine(header);
+                                    foreach (string record in recordList)
+                                    {
+                                        sw.WriteLine(record);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (found == false)
+                    {
+                        Console.WriteLine("{0} not found, please enter a correct business name.", bizName);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Inputted date is invalid, it must not be later than the check in time.");
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Please follow accordingly and enter the correct input.");
+            }
+
+
         }
     }
 }
