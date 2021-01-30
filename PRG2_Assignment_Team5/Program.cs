@@ -482,11 +482,6 @@ namespace PRG2_Assignment_Team5
 
         }
 
-        static void ReplaceTraceTogetherToken(Resident r)
-        {
-
-        }
-
         static void DisplaySHNFacilities(List<SHNFacility> facilityList)
         {
             Console.WriteLine("\nOfficial SHN Facilities\n");
