@@ -53,7 +53,6 @@ namespace PRG2_Assignment_Team5
                 }
                 else if (selection == "3")                                                  // Assign/Replace TraceTogether Token
                 {
-                    // !Comments by Jordan - may be able to do validation of person type inside method to make main program cleaner.
                     Console.Write("Enter Name of Person to Search: ");
                     string searchP = Console.ReadLine();
                     Person person = SearchPerson(personList, searchP);
@@ -128,10 +127,6 @@ namespace PRG2_Assignment_Team5
                 {
                     GenerateCurrentSHN(personList);
                 }
-                else if (selection == "14")
-                {
-                    // Reserved for additional features.
-                }
                 else if (selection == "0")
                 {
                     Console.WriteLine("You have exited the program.");
@@ -145,9 +140,9 @@ namespace PRG2_Assignment_Team5
         }
 
         /* START OF METHODS - General Methods */
-        // Display Menu to Print Application Functions for User's Selection
         static void DisplayMenu()
         {
+            // Display Menu to Print Application Functions for User's Selection
             Console.WriteLine("COVID-19 Monitoring System\n");
             Console.WriteLine("[1]\tView Visitors");
             Console.WriteLine("[2]\tSearch Person");
@@ -164,6 +159,64 @@ namespace PRG2_Assignment_Team5
             Console.WriteLine("[13]\tGenerate SHN Report");
             Console.WriteLine("[0]\tExit");
             Console.WriteLine("______________________________________________________________");
+        }
+        static void ListVisitors(List<Person> pList)
+        {
+            // Display all visitors by looping through person list and filtering if person object is Visitor.
+            Console.WriteLine("\nAll Visitors\n");
+            Console.WriteLine("{0, -10} {1, -15} {2, -15}", "Name", "Passport No.", "Nationality");
+
+            foreach (Person p in pList)
+            {
+                if (p is Visitor)
+                {
+                    Visitor v = (Visitor) p;                                       // Downcasting to access Visitor class properties.
+                    Console.WriteLine("{0, -10} {1, -15} {2, -15}", p.Name, v.PassportNo, v.Nationality);
+                }
+            }
+            Console.WriteLine("______________________________________________________________");
+        }
+        static Person SearchPerson(List<Person> pList, string name)
+        {
+            // Retrieve Person's object from personList using a loop, based on user's input.
+            foreach (Person p in pList)
+            {
+                if (p.Name.ToLower() == name.ToLower())
+                {
+                    return p;
+                }
+            }
+            return null;                                                           // return null if loop ends and person was not found.
+        }
+
+        static void DisplayQueryDetails(Person query, string searchP)
+        {
+            Console.WriteLine("\nSearch Person\n");
+            if (query != null)
+            {
+                if (query is Resident)
+                {
+                    Resident r = (Resident) query;                   // Downcasting to retrieve Resident class properties.
+                    Console.WriteLine("{0, -10} {1, -20} {2, -20}", "Name", "Address", "Last Left Country Date");
+                    Console.WriteLine("{0, -10} {1, -20} {2, -20}", r.Name, r.Address, r.LastLeftCountry.ToString("dd/MM/yyyy"));
+                    PrintTravelEntry(r);                             // Call PrintTravelEntry() method to display person's Travel Entry Records
+                    PrintSafeEntry(r);                               // Call PrintSafeEntry() method to display person's Safe Entry Records.
+                    DisplayTokenDetails(r);                          // Call DisplayTokenDetails to display person's TraceTogether Token Details.
+                }
+                else
+                {
+                    Visitor v = (Visitor) query;                     // Downcasting to retrieve Visitor class properties.
+                    Console.WriteLine("{0, -10} {1, -10} {2, -25}", "Name", "Passport No.", "Nationality");
+                    Console.WriteLine("{0, -10} {1, -10} {2, -25}", v.Name, v.PassportNo, v.Nationality);
+                    PrintTravelEntry(v);                             // Call PrintTravelEntry() method to display person's Travel Entry Records
+                    PrintSafeEntry(v);                               // Call PrintSafeEntry() method to display person's Safe Entry Records.
+                }
+            }
+            else
+            {
+                Console.WriteLine("Sorry, {0} could not be found.", searchP);
+            }
+            Console.WriteLine("______________________________________________________________\n");
         }
 
         /* INITIALIZATION METHODS */
@@ -322,33 +375,6 @@ namespace PRG2_Assignment_Team5
                 }
                 return shnFacilityList;
             }
-        }
-
-        static void ListVisitors(List<Person> pList)
-        {
-            Console.WriteLine("\nAll Visitors\n");
-            Console.WriteLine("{0, -10} {1, -15} {2, -15}", "Name", "Passport No.", "Nationality");
-            foreach (Person p in pList)
-            {
-                if (p is Visitor)
-                {
-                    Visitor v = (Visitor)p;
-                    Console.WriteLine("{0, -10} {1, -15} {2, -15}", p.Name, v.PassportNo, v.Nationality);
-                }
-            }
-            Console.WriteLine("______________________________________________________________\n");
-        }
-
-        static Person SearchPerson(List<Person> pList, string name)
-        {
-            foreach (Person p in pList)
-            {
-                if (p.Name.ToLower() == name.ToLower())
-                {
-                    return p;
-                }
-            }
-            return null;
         }
 
         static void PrintTravelEntry(Person p)
@@ -551,37 +577,6 @@ namespace PRG2_Assignment_Team5
             {
                 Console.WriteLine(ex.Message);
             }
-        }
-
-        static void DisplayQueryDetails(Person query, string searchP)
-        {
-            Console.WriteLine("\nSearch Person\n");
-            if (query != null)
-            {
-                if (query is Resident)
-                {
-                    Resident r = (Resident)query;
-                    Console.WriteLine("{0, -10} {1, -20} {2, -20}", "Name", "Address", "Last Left Country Date");
-                    Console.WriteLine("{0, -10} {1, -20} {2, -20}", r.Name, r.Address, r.LastLeftCountry.ToString("dd/MM/yyyy"));
-
-                    PrintTravelEntry(r);
-                    PrintSafeEntry(r);
-                    DisplayTokenDetails(r);
-                }
-                else
-                {
-                    Visitor v = (Visitor) query;
-                    Console.WriteLine("{0, -10} {1, -10} {2, -25}", "Name", "Passport No.", "Nationality");
-                    Console.WriteLine("{0, -10} {1, -10} {2, -25}", v.Name, v.PassportNo, v.Nationality);
-                    PrintTravelEntry(v);
-                    PrintSafeEntry(v);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Sorry, {0} could not be found.", searchP);
-            }
-            Console.WriteLine("______________________________________________________________\n");
         }
 
         static void CreateVisitor(List<Person> pList)
