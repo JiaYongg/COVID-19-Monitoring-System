@@ -911,11 +911,12 @@ namespace PRG2_Assignment_Team5
 
                 Console.Write("Enter the Date time(MM/DD/YYYY): ");
                 DateTime date = Convert.ToDateTime(Console.ReadLine());
-                if (date < DateTime.Now)
+
+                bool found = false;
+                if (date <= DateTime.Now.Date)
                 {
                     Console.Write("Enter Business Name: ");
                     string bizName = Console.ReadLine();
-                    bool found = false;
                 
                     foreach (Person p in pList)
                     {
@@ -924,24 +925,58 @@ namespace PRG2_Assignment_Team5
                             if (bizName.ToLower() == se.Location.BusinessName.ToLower())
                             {
                                 found = true;
-                                string entryRecord = p.Name + "," + se.CheckIn + "," + se.CheckOut;
-                                recordList.Add(entryRecord);
-
-                                using (StreamWriter sw = new StreamWriter("SafeEntryRecord.csv", false))
+                                if (date.Date >= se.CheckIn.Date)
                                 {
-                                    sw.WriteLine(header);
-                                    foreach (string record in recordList)
+                                    if (se.CheckOut.Date == DateTime.MinValue)
                                     {
-                                        sw.WriteLine(record);
+                                        string entryRecord = p.Name + "," + se.CheckIn + "," + "Not checked out";
+                                        recordList.Add(entryRecord);
+
+                                        using (StreamWriter sw = new StreamWriter("SafeEntryRecord.csv", false))
+                                        {
+                                            sw.WriteLine(header);
+                                            foreach (string record in recordList)
+                                            {
+                                                sw.WriteLine(record);
+                                            }
+                                            Console.WriteLine("Sucessfully exported to SafeEntryRecord.csv!");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (bizName.ToLower() == se.Location.BusinessName.ToLower())
+                                        {
+                                            string entryRecord = p.Name + "," + se.CheckIn + "," + se.CheckOut;
+                                            recordList.Add(entryRecord);
+
+                                            using (StreamWriter sw = new StreamWriter("SafeEntryRecord.csv", false))
+                                            {
+                                                sw.WriteLine(header);
+                                                foreach (string record in recordList)
+                                                {
+                                                    sw.WriteLine(record);
+                                                }
+                                                Console.WriteLine("Sucessfully exported to SafeEntryRecord.csv!");
+                                            }
+                                        }
                                     }
                                 }
+                                else
+                                {
+                                    Console.WriteLine("No entries of safe entry found on {0} for {1}. ", date.Date.ToString("MM/dd/yyyy"), se.Location.BusinessName);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("{0} not found, please enter a correct business name.", bizName);
                             }
                         }
                     }
                     if (found == false)
                     {
-                        Console.WriteLine("{0} not found, please enter a correct business name.", bizName);
+                        Console.WriteLine("There are currently no safe entry record to be exported.");
                     }
+
                 }
                 else
                 {
